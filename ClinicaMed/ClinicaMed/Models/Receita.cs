@@ -31,8 +31,9 @@ namespace ClinicaMed.Models
         /// <summary>
         /// Identificador do Processo referente à receita
         /// </summary>
-        // Deve ser uma chave estrangeira com a class Processo
-        public int IdProcesso { get; set; }
+        [ForeignKey(nameof(Processo))]
+        public int ProcessoFK { get; set; }
+        public Processo Processo { get; set; }
 
         /// <summary>
         /// Identificador do Colaborador referente à receita

@@ -7,6 +7,7 @@ namespace ClinicaMed.Models
         public Colaborador()
         {
             ListaReceita = new HashSet<Receita>();
+            ListaProceColab = new HashSet<ProcessoColaborador>(); 
         }
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace ClinicaMed.Models
 
 
         /// <summary>
-        /// Telemovel do utilizador
+        /// Telemovel do colaborador
         /// </summary>
         [Display(Name = "Telemóvel")]
         [StringLength(9)]
@@ -96,7 +97,7 @@ namespace ClinicaMed.Models
         public string Localidade { get; set; }
 
         /// <summary>
-        /// Numero de Identificação Fiscal do colaborado, deve possuir 9 digitos de 0 a 9 
+        /// Numero de Identificação Fiscal do colaborador, deve possuir 9 digitos de 0 a 9 
         /// </summary>
         [StringLength(9)]
         [RegularExpression("[0-9]{9}", ErrorMessage = "o {0} introduzido é inválido")]
@@ -115,5 +116,11 @@ namespace ClinicaMed.Models
 
         //Coleção que referencia a relação de tipo 1-N com a class Receita
         public ICollection<Receita> ListaReceita { get; set; }
+
+        // Lista referente à tabela do relacionamento N-M entre Processo de nome ProcessoColaborador
+        public ICollection<ProcessoColaborador> ListaProceColab { get; set; }
+
+        //Lista que referencia a relação do tipo 1-N com a class Consulta
+        public ICollection<Consulta> ListaConsulta { get; set; }
     }
 }
