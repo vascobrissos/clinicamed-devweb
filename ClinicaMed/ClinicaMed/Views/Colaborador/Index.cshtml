@@ -1,0 +1,67 @@
+﻿@model IEnumerable<ClinicaMed.Models.Colaborador>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Lista de Colaboradores</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Novo Colaborador</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nome de Apresentação
+            </th>
+            <th>
+                Estado da Conta
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var colaborador in Model)
+        {
+            <tr>
+                <td>
+                    @colaborador.NomeApresentacao
+                </td>
+                <td>
+                    TO DEVELOP
+                </td>
+                <td>
+                    <button onclick="toggleDetails(@colaborador.IdCol)">Detalhes</button> |
+                    <a asp-action="Edit" asp-route-id="@colaborador.IdCol">Editar</a> |
+                    <a asp-action="Toggle" asp-route-id="@colaborador.IdCol">Desativar/Ativar?</a>
+                </td>
+            </tr>
+            <tr id="details-@colaborador.IdCol" style="display: none;">
+                <td colspan="7">
+                    <strong>Sexo:</strong> @colaborador.Sexo <br />
+                    <strong>Pais:</strong> @colaborador.Pais <br />
+                    <strong>Morada:</strong> @colaborador.Morada <br />
+                    <strong>Código Postal:</strong> @colaborador.CodPostal <br />
+                    <strong>Localidade:</strong> @colaborador.Localidade <br />
+                    <strong>Nacionalidade:</strong> @colaborador.Nacionalidade <br />
+                    <strong>Estado Civil:</strong> @colaborador.EstadoCivil <br />
+                    <strong>Número de Ordem:</strong> @colaborador.NumOrdem <br />
+                    <strong>User ID:</strong> @colaborador.UserId
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function toggleDetails(id) {
+        var detailsRow = document.getElementById("details-" + id);
+        if (detailsRow.style.display === "none") {
+            detailsRow.style.display = "";
+        } else {
+            detailsRow.style.display = "none";
+        }
+    }
+</script>

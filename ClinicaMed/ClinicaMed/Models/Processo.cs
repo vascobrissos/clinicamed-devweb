@@ -9,6 +9,7 @@ namespace ClinicaMed.Models
         {
             ListaProceColab = new HashSet<ProcessoColaborador>();
             ListaReceita = new HashSet<Receita>();
+            ListaConsulta = new HashSet<Consulta>();
         }
 
         /// <summary>
@@ -53,17 +54,5 @@ namespace ClinicaMed.Models
 
         //Lista que referencia a relação do tipo 1-N com a class Consulta
         public ICollection<Consulta> ListaConsulta { get; set; }
-
-        //**************** Chave estrangeira com a tabela Examinando ***************//
-
-        [ForeignKey(nameof(Examinando))]
-        public int ExaminandoFK { get; set; }
-        public Examinando Examinando { get; set; }
-
-        //**************** Chave estrangeira com a tabela Requisitante ***************//
-
-        [ForeignKey(nameof(Requisitante))]
-        public int RequisitanteFK { get; set; }
-        public Requisitante Requisitante { get; set; }
     }
 }

@@ -1,0 +1,41 @@
+﻿@model IEnumerable<ClinicaMed.Models.Processo>
+
+@{
+    ViewData["Title"] = "Lista de Processos";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Criar Novo Processo</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Id Interno</th>
+            <th>Data de Criação</th>
+            <th>Data de Início</th>
+            <th>Data de Término</th>
+            <th>Estado</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.IdPro</td>
+                <td>@item.IdInterno</td>
+                <td>@item.DataCriacao</td>
+                <td>@item.DataInicio</td>
+                <td>@item.DataTermino</td>
+                <td>@item.Estado</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.IdPro" class="btn btn-info">Detalhes</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

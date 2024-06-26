@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ClinicaMed.Models
 {
@@ -146,5 +147,9 @@ namespace ClinicaMed.Models
 
         // Lista referente à relação 1-N entre a tabela Examinando com a tabela Processos 
         public ICollection<Processo> ListaProcesso { get; set; }
+
+        [ForeignKey(nameof(Processo))]
+        public int ProcessoFK { get; set; }
+        public Processo Processo { get; set; }
     }
 }

@@ -1,0 +1,34 @@
+﻿@model ClinicaMed.Models.Processo
+
+@{
+    ViewData["Title"] = "Detalhes do Processo";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h4>Processo</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Id</dt>
+        <dd class="col-sm-10">@Model.IdPro</dd>
+
+        <dt class="col-sm-2">Id Interno</dt>
+        <dd class="col-sm-10">@Model.IdInterno</dd>
+
+        <dt class="col-sm-2">Data de Criação</dt>
+        <dd class="col-sm-10">@Model.DataCriacao</dd>
+
+        <dt class="col-sm-2">Data de Início</dt>
+        <dd class="col-sm-10">@Model.DataInicio</dd>
+
+        <dt class="col-sm-2">Data de Término</dt>
+        <dd class="col-sm-10">@Model.DataTermino</dd>
+
+        <dt class="col-sm-2">Estado</dt>
+        <dd class="col-sm-10">@Model.Estado</dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Index" class="btn btn-primary">Voltar à Lista</a>
+</div>

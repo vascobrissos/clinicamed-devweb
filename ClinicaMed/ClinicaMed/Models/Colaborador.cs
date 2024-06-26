@@ -7,6 +7,7 @@ namespace ClinicaMed.Models
         public Colaborador()
         {
             ListaReceita = new HashSet<Receita>();
+            ListaConsulta = new HashSet<Consulta>();
             ListaProceColab = new HashSet<ProcessoColaborador>();
         }
 
@@ -114,7 +115,7 @@ namespace ClinicaMed.Models
         /// e a base de dados da 'autenticação'
         /// </summary>
         [StringLength(40)]
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
         //Coleção que referencia a relação de tipo 1-N com a class Receita
         public ICollection<Receita> ListaReceita { get; set; }
