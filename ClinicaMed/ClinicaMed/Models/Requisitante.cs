@@ -13,18 +13,20 @@ namespace ClinicaMed.Models
         /// Identificador do requisitante
         /// </summary>
         [Key]
-        public int Id { get; set; }
+        public int IdReq { get; set; }
 
         /// <summary>
         /// Nome do requisitante
         /// </summary>
         [StringLength(100)]
+        [Required]
         public string Nome { get; set; }
 
         /// <summary>
         /// Apelido do requisitante
         /// </summary>
         [StringLength(100)]
+        [Required]
         public string Apelido { get; set; }
 
         /// <summary>
@@ -33,12 +35,14 @@ namespace ClinicaMed.Models
         [Display(Name = "Telemóvel")]
         [StringLength(9)]
         [RegularExpression("9[1236][0-9]{7}", ErrorMessage = "o {0} introduzido é inválido")] // o {0} referencia o "Telemóvel"
+        [Required]
         public string Telemovel { get; set; }
 
         /// <summary>
         /// Email do requisitante
         /// </summary>
         [StringLength(100)]
+        [Required]
         public string Email { get; set; }
 
         /// <summary>
@@ -49,31 +53,36 @@ namespace ClinicaMed.Models
         /// <summary>
         /// Pais do requisitante
         /// </summary>
-        [StringLength (100)]
+        [StringLength(100)]
+        [Required]
         public string Pais { get; set; }
 
         /// <summary>
         /// Morada do requisitante
         /// </summary>
         [StringLength(100)]
+        [Required]
         public string Morada { get; set; }
 
         /// <summary>
         /// Código Postal do requisitante
         /// </summary>
         [StringLength(100)]
+        [Required]
         public string CodigoPostal { get; set; }
 
         /// <summary>
         /// Localidade do requisitante
         /// </summary>
         [StringLength(100)]
+        [Required]
         public string Localidade { get; set; }
 
         /// <summary>
         /// Nacionalidade do requisitante
         /// </summary>
         [StringLength(100)]
+        [Required]
         public string Nacionalidade { get; set; }
 
         /// <summary>
@@ -81,6 +90,7 @@ namespace ClinicaMed.Models
         /// </summary>
         [StringLength(9)]
         [RegularExpression("[0-9]{9}", ErrorMessage = "o {0} introduzido é inválido")]
+        [Required]
         public string Nif { get; set; }
 
         //Lista referente á tabela de Processos do relacionamento 1-N

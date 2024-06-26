@@ -15,10 +15,11 @@ namespace ClinicaMed.Models
         /// Identificador único do processo
         /// </summary>
         [Key]
-        public int Id { get; set; }
+        public int IdPro { get; set; }
 
         /// <summary>
         /// Identificador interno do processo
+        /// Segue regras de formatação (ano, tipo)
         /// </summary>
         [StringLength(100)]
         public string IdInterno { get; set; }
@@ -26,7 +27,8 @@ namespace ClinicaMed.Models
         /// <summary>
         /// Data da criação do processo
         /// </summary>
-        public  DateTime DataCriacao { get; set; }
+        [Required]
+        public DateTime DataCriacao { get; set; }
 
         /// <summary>
         /// Data do inicio do processo
@@ -44,7 +46,7 @@ namespace ClinicaMed.Models
         public int Estado { get; set; }
 
         // Lista referente á tabela do relacionamento N-M entre Colaborador de nome ProcessoColaborador
-        public ICollection<ProcessoColaborador> ListaProceColab {  get; set; } 
+        public ICollection<ProcessoColaborador> ListaProceColab { get; set; }
 
         //Lista que referencia a relação do tipo 1-N com a class Receita
         public ICollection<Receita> ListaReceita { get; set; }
@@ -56,7 +58,7 @@ namespace ClinicaMed.Models
 
         [ForeignKey(nameof(Examinando))]
         public int ExaminandoFK { get; set; }
-        public Examinando Examinando {  get; set; }
+        public Examinando Examinando { get; set; }
 
         //**************** Chave estrangeira com a tabela Requisitante ***************//
 

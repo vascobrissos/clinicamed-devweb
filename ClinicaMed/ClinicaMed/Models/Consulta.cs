@@ -9,22 +9,24 @@ namespace ClinicaMed.Models
         /// Identificado unico da consulta
         /// </summary>
         [Key]
-        public int Id { get; set; }
+        public int IdCon { get; set; }
 
         /// <summary>
         /// Data da consulta
         /// </summary>
+        [Required]
         public DateTime DataConsulta { get; set; }
 
         /// <summary>
         /// Observacoes uteis pro parte do colaborador sobre a consulta
         /// </summary>
-        [StringLength(100)]
+        [StringLength(10000)]
         public string Observacoes { get; set; }
 
         /// <summary>
         /// Estado da consulta
         /// </summary>
+        [Required]
         public int Estado { get; set; }
 
         //******************************************************//
@@ -37,6 +39,6 @@ namespace ClinicaMed.Models
 
         [ForeignKey(nameof(Processo))]
         public int ProcessoFK { get; set; }
-        public Colaborador Processo { get; set; }
+        public Processo Processo { get; set; }
     }
 }

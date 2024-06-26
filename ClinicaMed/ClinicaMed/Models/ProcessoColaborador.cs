@@ -1,20 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ClinicaMed.Models
 {
-    [PrimaryKey(nameof(Processo),nameof(Colaborador))]
     public class ProcessoColaborador
     {
         /// <summary>
+        /// Identificador ùnico da associação entre Processo e Colaborador
+        /// </summary>
+        [Key]
+        public int IdProCol { get; set; }
+
+        /// <summary>
         /// Data da atribuicao do processo pelo colaborador
         /// </summary>
+        [Required]
         public DateTime DataAtribuicao { get; set; }
 
         /// <summary>
         /// Data da remoção do processo pelo colaborador
         /// </summary>
-        public DateTime DataRemocao{ get; set; }
+        [Required]
+        public DateTime DataRemocao { get; set; }
 
         //******************************************************//
         // Chaves forasteiras das tabelas Colaborador e Processo//

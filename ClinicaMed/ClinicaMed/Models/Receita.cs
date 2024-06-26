@@ -9,12 +9,13 @@ namespace ClinicaMed.Models
         /// Identificador único da receita, chave primária
         /// </summary>
         [Key]
-        public int Id { get; set; }
+        public int IdRec { get; set; }
 
         /// <summary>
         /// Numero da receita?
         /// </summary>
         [StringLength(150)]
+        [Required]
         public string NumReceita { get; set; }
 
         /// <summary>
@@ -26,7 +27,14 @@ namespace ClinicaMed.Models
         /// <summary>
         /// Data e hora da receita
         /// </summary>
+        [Required]
         public DateTime DataReceita { get; set; }
+
+        /// <summary>
+        /// Identifica o estado da receita. REVER CONCEITO
+        /// </summary>
+        [Required]
+        public int Estado { get; set; }
 
         /// <summary>
         /// Identificador do Processo referente à receita
@@ -42,10 +50,5 @@ namespace ClinicaMed.Models
         [ForeignKey(nameof(Colaborador))]
         public int ColaboradorFK { get; set; }
         public Colaborador Colaborador { get; set; }
-
-        /// <summary>
-        /// Identifica o estado da receita. REVER CONCEITO
-        /// </summary>
-        public int Estado { get; set; }
     }
 }

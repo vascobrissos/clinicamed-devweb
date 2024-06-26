@@ -13,20 +13,21 @@ namespace ClinicaMed.Models
         /// Identificador ùnico do examinando na clínica
         /// </summary>
         [Key]
-        public int Id { get; set; }
+        public int IdExa { get; set; }
 
         /// <summary>
         /// Nome do examinando
         /// </summary>
         [StringLength(100)]
+        [Required]
         public string Nome { get; set; }
 
         /// <summary>
         /// Apelido do examinando
         /// </summary>
         [StringLength(100)]
+        [Required]
         public string Apelido { get; set; }
-
 
         /// <summary>
         /// Telemovel do examinando
@@ -50,8 +51,8 @@ namespace ClinicaMed.Models
         /// <summary>
         /// Notas sobre os antecedentes do examinando
         /// </summary>
-        [StringLength(1000)]
-        public string Antecedentes{ get; set; }
+        [StringLength(10000)]
+        public string Antecedentes { get; set; }
 
         /// <summary>
         /// Data de nascimento do examinando
@@ -99,8 +100,6 @@ namespace ClinicaMed.Models
         /// </summary>
         public int NumUtente { get; set; }
 
-
-        //AQUI TENHO DUVIDAS ENTRE USAR UM TIPO DE IDENTIFICACAO, VALIDADE DA MESMA OU LIMITAR-NOS A PEDIR O CC E A SUA VALIDADE
         /// <summary>
         /// Cartão de Cidadão do examinando
         /// </summary>
