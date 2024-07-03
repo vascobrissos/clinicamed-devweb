@@ -54,5 +54,10 @@ namespace ClinicaMed.Models
 
         //Lista que referencia a relação do tipo 1-N com a class Consulta
         public ICollection<Consulta> ListaConsulta { get; set; }
+
+        //Referencia o examinando
+        [ForeignKey(nameof(Examinando))]
+        public int? ExaminandoIdExa { get; set; }
+        public Examinando Examinando { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace ClinicaMed.Data
 {
@@ -32,6 +33,10 @@ namespace ClinicaMed.Data
                 new IdentityRole { Id = "med", Name = "Medico", NormalizedName = "MEDICO" }
                 );
 
+            builder.Entity<Processo>()
+                .HasOne(p => p.Examinando)
+                .WithMany(e => e.ListaProcesso)
+                .HasForeignKey(p => p.ExaminandoIdExa);// Adjusted to match the database constraint
         }
 
         // definição das 'tabelas'

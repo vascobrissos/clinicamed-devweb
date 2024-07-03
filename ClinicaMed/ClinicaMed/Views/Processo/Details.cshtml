@@ -27,6 +27,24 @@
 
         <dt class="col-sm-2">Estado</dt>
         <dd class="col-sm-10">@Model.Estado</dd>
+
+        <dt class="col-sm-2">Examinando</dt>
+        @if(Model.ExaminandoIdExa == null)
+        {
+            <dd class="col-sm-10">Não Atribuido</dd>
+            <div>
+                <a asp-action="Create" asp-controller="Examinando" class="btn btn-success">Criar Novo Examinando</a>
+                <a asp-action="Index" asp-route-id="Examinando" class="btn btn-primary">Associar Examinando Existente</a>
+            </div>
+        }
+        else
+        {
+            <span>@Model.Examinando.Nome @Model.Examinando.Apelido</span>
+            <div>
+                <a asp-action="Details" asp-controller="Examinando" asp-route-id="@Model.ExaminandoIdExa" class="btn btn-info">Ver Detalhes do Examinando</a>
+            </div>
+        }
+
     </dl>
 </div>
 <div>

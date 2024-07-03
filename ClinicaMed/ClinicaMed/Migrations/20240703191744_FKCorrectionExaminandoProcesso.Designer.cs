@@ -4,6 +4,7 @@ using ClinicaMed.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClinicaMed.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240703191744_FKCorrectionExaminandoProcesso")]
+    partial class FKCorrectionExaminandoProcesso
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -265,7 +268,7 @@ namespace ClinicaMed.Migrations
                     b.Property<int>("Estado")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ExaminandoIdExa")
+                    b.Property<int>("ExaminandoIdExa")
                         .HasColumnType("int");
 
                     b.Property<string>("IdInterno")
@@ -669,7 +672,9 @@ namespace ClinicaMed.Migrations
                 {
                     b.HasOne("ClinicaMed.Models.Examinando", "Examinando")
                         .WithMany("ListaProcesso")
-                        .HasForeignKey("ExaminandoIdExa");
+                        .HasForeignKey("ExaminandoIdExa")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ClinicaMed.Models.Requisitante", null)
                         .WithMany("ListaProcesso")

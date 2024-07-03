@@ -41,7 +41,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Processo}/{action=Index}/{id?}");
+    pattern: "{controller=Colaborador}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();

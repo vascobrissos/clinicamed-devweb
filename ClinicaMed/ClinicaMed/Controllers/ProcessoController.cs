@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using ClinicaMed.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ClinicaMed.Controllers
 {
@@ -20,7 +22,7 @@ namespace ClinicaMed.Controllers
         // Listar todos os processos
         public IActionResult Index()
         {
-            var processos = _context.Processo.ToList();
+            var processos = _context.Processo.Include(p => p.Examinando).ToList();
             return View(processos);
         }
 
@@ -32,6 +34,8 @@ namespace ClinicaMed.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.ProcessoId = id;
             return View(processo);
         }
 
@@ -44,7 +48,7 @@ namespace ClinicaMed.Controllers
                 DataCriacao = DateTime.Now,
                 DataInicio = DateOnly.FromDateTime(DateTime.Now),
                 DataTermino = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
-                Estado = 1 // Estado inicial
+                Estado = 1, // Estado inicial
             };
 
             _context.Processo.Add(newProcesso);
