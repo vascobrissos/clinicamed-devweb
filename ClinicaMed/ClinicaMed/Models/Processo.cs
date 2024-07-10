@@ -59,5 +59,10 @@ namespace ClinicaMed.Models
         [ForeignKey(nameof(Examinando))]
         public int? ExaminandoIdExa { get; set; }
         public Examinando Examinando { get; set; }
+
+        // Referencia o requisitante
+        [ForeignKey(nameof(Requisitante))]
+        public int? RequisitanteIdReq { get; set; }
+        public Requisitante Requisitante { get; set; }
     }
 }

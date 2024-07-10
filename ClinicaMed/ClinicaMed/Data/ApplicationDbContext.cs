@@ -36,7 +36,12 @@ namespace ClinicaMed.Data
             builder.Entity<Processo>()
                 .HasOne(p => p.Examinando)
                 .WithMany(e => e.ListaProcesso)
-                .HasForeignKey(p => p.ExaminandoIdExa);// Adjusted to match the database constraint
+                .HasForeignKey(p => p.ExaminandoIdExa);// Ajustar a base de dados para a relação Processo-Examinando
+
+            builder.Entity<Processo>()
+                .HasOne(p => p.Requisitante)
+                .WithMany(e => e.ListaProcesso)
+                .HasForeignKey(p => p.RequisitanteIdReq);// Ajustar a base de dados para a relação Processo-Requisitante
         }
 
         // definição das 'tabelas'

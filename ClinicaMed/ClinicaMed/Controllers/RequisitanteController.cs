@@ -10,23 +10,23 @@ using ClinicaMed.Models;
 
 namespace ClinicaMed.Controllers
 {
-    public class ExaminandoController : Controller
+    public class RequisitanteController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ExaminandoController(ApplicationDbContext context)
+        public RequisitanteController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Examinando
+        // GET: Requisitante
         public async Task<IActionResult> Index(int? processoId)
         {
             ViewData["ProcessoId"] = processoId;
-            return View(await _context.Examinando.ToListAsync());
+            return View(await _context.Requisitante.ToListAsync());
         }
 
-        // GET: Examinando/Details/5
+        // GET: Requisitante/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,35 +34,35 @@ namespace ClinicaMed.Controllers
                 return NotFound();
             }
 
-            var examinando = await _context.Examinando
-                .FirstOrDefaultAsync(m => m.IdExa == id);
-            if (examinando == null)
+            var requisitante = await _context.Requisitante
+                .FirstOrDefaultAsync(m => m.IdReq == id);
+            if (requisitante == null)
             {
                 return NotFound();
             }
 
-            return View(examinando);
+            return View(requisitante);
         }
 
-        // GET: Examinando/Create
+        // GET: Requisitante/Create
         public IActionResult Create(int? processoId)
         {
             ViewBag.processoId = processoId;
 
-           var model = new Examinando();
-           return View(model);
+            var model = new Requisitante();
+            return View(model);
         }
 
-        // POST: Examinando/Create
+        // POST: Requisitante/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdExa,Nome,Apelido,Telemovel,Email,Sexo,Antecedentes,DataNascimento,Profissao,Pais,Morada,CodigoPostal,Localidade,Nacionalidade,NumUtente,CartaoCidadao,ValidadeCC,Nif,Seguradora,NumeroSeguro,FiliacaoMae,FiliacaoPai")] Examinando examinando, int? processoId)
+        public async Task<IActionResult> Create([Bind("IdReq,Nome,Apelido,Telemovel,Email,Sexo,Pais,Morada,CodigoPostal,Localidade,Nacionalidade,Nif")] Requisitante requisitante, int? processoId)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(examinando);
+                _context.Add(requisitante);
                 await _context.SaveChangesAsync();
 
                 if (processoId.HasValue)
@@ -70,20 +70,19 @@ namespace ClinicaMed.Controllers
                     var processo = await _context.Processo.FindAsync(processoId.Value);
                     if (processo != null)
                     {
-                        processo.ExaminandoIdExa = examinando.IdExa;
+                        processo.RequisitanteIdReq= requisitante.IdReq;
                         _context.Update(processo);
                         await _context.SaveChangesAsync();
                         // Caso exista processo, retorna para os detalhes do mesmo 
                         return RedirectToAction("Details", "Processo", new { id = processoId.Value });
                     }
                 }
-                // Caso nao exista processo, mas foi criado com sucesso o examinando, volta para o index
                 return RedirectToAction(nameof(Index));
             }
-            return View(examinando);
+            return View(requisitante);
         }
 
-        // GET: Examinando/Edit/5
+        // GET: Requisitante/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -91,22 +90,22 @@ namespace ClinicaMed.Controllers
                 return NotFound();
             }
 
-            var examinando = await _context.Examinando.FindAsync(id);
-            if (examinando == null)
+            var requisitante = await _context.Requisitante.FindAsync(id);
+            if (requisitante == null)
             {
                 return NotFound();
             }
-            return View(examinando);
+            return View(requisitante);
         }
 
-        // POST: Examinando/Edit/5
+        // POST: Requisitante/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdExa,Nome,Apelido,Telemovel,Email,Sexo,Antecedentes,DataNascimento,Profissao,Pais,Morada,CodigoPostal,Localidade,Nacionalidade,NumUtente,CartaoCidadao,ValidadeCC,Nif,Seguradora,NumeroSeguro,FiliacaoMae,FiliacaoPai")] Examinando examinando)
+        public async Task<IActionResult> Edit(int id, [Bind("IdReq,Nome,Apelido,Telemovel,Email,Sexo,Pais,Morada,CodigoPostal,Localidade,Nacionalidade,Nif")] Requisitante requisitante)
         {
-            if (id != examinando.IdExa)
+            if (id != requisitante.IdReq)
             {
                 return NotFound();
             }
@@ -115,12 +114,12 @@ namespace ClinicaMed.Controllers
             {
                 try
                 {
-                    _context.Update(examinando);
+                    _context.Update(requisitante);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ExaminandoExists(examinando.IdExa))
+                    if (!RequisitanteExists(requisitante.IdReq))
                     {
                         return NotFound();
                     }
@@ -131,10 +130,10 @@ namespace ClinicaMed.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(examinando);
+            return View(requisitante);
         }
 
-        // GET: Examinando/Delete/5
+        // GET: Requisitante/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -142,56 +141,55 @@ namespace ClinicaMed.Controllers
                 return NotFound();
             }
 
-            var examinando = await _context.Examinando
-                .FirstOrDefaultAsync(m => m.IdExa == id);
-            if (examinando == null)
+            var requisitante = await _context.Requisitante
+                .FirstOrDefaultAsync(m => m.IdReq == id);
+            if (requisitante == null)
             {
                 return NotFound();
             }
 
-            return View(examinando);
+            return View(requisitante);
         }
 
-        // POST: Examinando/Delete/5
+        // POST: Requisitante/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var examinando = await _context.Examinando.FindAsync(id);
-            if (examinando != null)
+            var requisitante = await _context.Requisitante.FindAsync(id);
+            if (requisitante != null)
             {
-                _context.Examinando.Remove(examinando);
+                _context.Requisitante.Remove(requisitante);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ExaminandoExists(int id)
+        private bool RequisitanteExists(int id)
         {
-            return _context.Examinando.Any(e => e.IdExa == id);
+            return _context.Requisitante.Any(e => e.IdReq == id);
         }
-
 
         [HttpGet]
         public async Task<IActionResult> AssociarProc(int id, int processoId)
         {
             //Buscar o processo recebido por asp-route-id de forma asincrona onde o processo corresponda ao passado no mesmo
-            var processo = await _context.Processo.Include(p => p.Examinando).FirstOrDefaultAsync(p => p.IdPro == processoId);
-            if (processo == null) 
+            var processo = await _context.Processo.Include(p => p.Requisitante).FirstOrDefaultAsync(p => p.IdPro == processoId);
+            if (processo == null)
             {
                 return NotFound();
             }
 
             //guarda o id do examinando no processo associado
-            processo.ExaminandoIdExa = id;
+            processo.RequisitanteIdReq = id;
             _context.Update(processo);
             await _context.SaveChangesAsync();
 
 
             //BUscar o examinando pelo id fornecido
-            var examinando = await _context.Examinando.FirstOrDefaultAsync(e => e.IdExa == id);
-            if(examinando == null)
+            var examinando = await _context.Requisitante.FirstOrDefaultAsync(e => e.IdReq == id);
+            if (examinando == null)
             {
                 return NotFound();
             }
@@ -200,7 +198,7 @@ namespace ClinicaMed.Controllers
             examinando.ListaProcesso.Add(processo);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Details","Processo", new {id = processoId});
+            return RedirectToAction("Details", "Processo", new { id = processoId });
         }
     }
 }

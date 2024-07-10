@@ -27,15 +27,15 @@ namespace ClinicaMed.Controllers
         }
 
         // Visualizar detalhes de um processo específico
-        public IActionResult Details(int id)
+        public IActionResult Details(int? id)
         {
-            var processo = _context.Processo.FirstOrDefault(p => p.IdPro == id);
+            var processo = _context.Processo.Include(p => p.Examinando).Include(p => p.Requisitante).FirstOrDefault(p => p.IdPro == id);
             if (processo == null)
             {
                 return NotFound();
             }
 
-            ViewBag.ProcessoId = id;
+        
             return View(processo);
         }
 

@@ -2,9 +2,10 @@
 
 @{
     ViewData["Title"] = "Create";
+    int? processoId = ViewBag.processoId as int?;
 }
 
-<h1>Create</h1>
+<h1>Criar Examinando</h1>
 
 <h4>Examinando</h4>
 <hr />
@@ -117,15 +118,19 @@
                 <input asp-for="FiliacaoPai" class="form-control" />
                 <span asp-validation-for="FiliacaoPai" class="text-danger"></span>
             </div>
+            <input type="hidden" asp-for="IdExa" />
+            <input type="hidden" name="processoId" value="@processoId" />
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <br />
+                <input type="submit" value="Criar" class="btn btn-primary" />
+                <br />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Voltar à lista</a>
 </div>
 
 @section Scripts {
