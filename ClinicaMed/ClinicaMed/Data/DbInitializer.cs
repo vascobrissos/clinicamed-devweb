@@ -20,8 +20,8 @@ namespace ClinicaMed.Data
             {
                 var user = new IdentityUser
                 {
-                    UserName = "admin@admin.com",
-                    NormalizedUserName = "ADMIN@ADMIN.COM",
+                    UserName = "admin",
+                    NormalizedUserName = "ADMIN",
                     Email = "admin@admin.com",
                     NormalizedEmail = "ADMIN@ADMIN.COM",
                     EmailConfirmed = true,

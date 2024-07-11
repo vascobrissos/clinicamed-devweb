@@ -47,24 +47,31 @@ namespace ClinicaMed.Controllers
         // GET: Receita/Create
         public IActionResult Create(int processoId)
         {
-            var medicosAssociados = _context.Processo
-                .Include(p => p.ListaProceColab)
-                .ThenInclude(pc => pc.Colaborador)
-                .Where(p => p.IdPro == processoId)
-                .SelectMany(p => p.ListaProceColab.Select(pc => pc.Colaborador))
-                .ToList();
+            // Buscar médicos associados ao processo
+            var medicos = _context.ProcessoColaborador
+                .Where(pc => pc.ProcessoFK == processoId)
+                .Select(pc => pc.Colaborador)
+                .Where(c => _context.UserRoles.Any(nur => nur.UserId == c.UserId && nur.RoleId == "med"))
+                .Select(c => new
+                {
+                    c.IdCol,
+                    NomeCompleto = c.Nome + " " + c.Apelido
+                }).ToList();
 
-            ViewBag.ColaboradorFK = new SelectList(medicosAssociados.Select(c => new { c.IdCol, NomeCompleto = c.Nome + " " + c.Apelido }), "IdCol", "NomeCompleto");
+            var options = string.Join("", medicos.Select(m => $"<option value=\"{m.IdCol}\">{m.NomeCompleto}</option>"));
 
-            ViewBag.ProcessoId = processoId;
+            ViewData["MedicosOptions"] = options;
+            ViewData["ProcessoId"] = processoId;
+
             var model = new Receita();
             return View(model);
         }
 
+
         // POST: Receita/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdRec,NumReceita,Notas,DataReceita,Estado,ProcessoFK,ColaboradorFK")] Receita receita, int processoId, int colaboradorId)
+        public async Task<IActionResult> Create([Bind("NumReceita,Notas,DataReceita,Estado")] Receita receita, int processoId, int colaboradorId)
         {
             // Carregar o processo associado ao processoId
             var processo = await _context.Processo.FindAsync(processoId);
@@ -73,7 +80,6 @@ namespace ClinicaMed.Controllers
                 return NotFound();
             }
 
-            colaboradorId = int.Parse(Request.Form["colaboradorId"]);
             // Carregar o colaborador associado ao colaboradorId
             var colaborador = await _context.Colaborador.FindAsync(colaboradorId);
             if (colaborador == null)
