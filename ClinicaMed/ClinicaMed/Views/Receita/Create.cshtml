@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Criar Receita";
+    int? processoId = ViewData["ProcessoId"] as int?;
+    int? colaboradorId = ViewData["ColaboradorId"] as int?;
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -37,11 +39,13 @@
                 <select asp-for="ColaboradorFK" class="form-control" asp-items="ViewBag.ColaboradorFK"></select>
                 <span asp-validation-for="ColaboradorFK" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="ProcessoFK" value="@ViewData["ProcessoId"]" />
-
+            <input type="hidden" id="colaboradorId" name="colaboradorId" value="" />
+            <input type="hidden" asp-for="ProcessoFK" value="ViewBag.ProcessoId" />
+            <!--Este hidden inpits servem para poder passar facilmente para o controller os ids que pretendo para validar o Model-->
+            <input type="hidden" name="processoId" value="@processoId" />
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Criar</button>
-                <a asp-action="Details" asp-controller="Processo" asp-route-id="@ViewData["ProcessoId"]" class="btn btn-secondary">Cancelar</a>
+                <a asp-action="Details" asp-controller="Processo" asp-route-id="ViewBag.ProcessoId" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>
@@ -51,4 +55,13 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $(function () {
+            // Quando o valor do select muda
+            $('#ColaboradorFK').change(function () {
+                // Atualiza o valor do campo hidden
+                $('#colaboradorId').val($(this).val());
+            });
+        });
+    </script>
 }

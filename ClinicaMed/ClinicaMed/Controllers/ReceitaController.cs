@@ -56,9 +56,9 @@ namespace ClinicaMed.Controllers
 
             ViewBag.ColaboradorFK = new SelectList(medicosAssociados.Select(c => new { c.IdCol, NomeCompleto = c.Nome + " " + c.Apelido }), "IdCol", "NomeCompleto");
 
-            ViewData["ProcessoId"] = processoId;
-
-            return View();
+            ViewBag.ProcessoId = processoId;
+            var model = new Receita();
+            return View(model);
         }
 
         // POST: Receita/Create
@@ -66,8 +66,6 @@ namespace ClinicaMed.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdRec,NumReceita,Notas,DataReceita,Estado,ProcessoFK,ColaboradorFK")] Receita receita, int processoId, int colaboradorId)
         {
-            processoId = ViewData["ProcessoId"] as int? ?? 0;
-
             // Carregar o processo associado ao processoId
             var processo = await _context.Processo.FindAsync(processoId);
             if (processo == null)
@@ -75,7 +73,7 @@ namespace ClinicaMed.Controllers
                 return NotFound();
             }
 
-            colaboradorId = ViewBag.ColaboradorFK;
+            colaboradorId = int.Parse(Request.Form["colaboradorId"]);
             // Carregar o colaborador associado ao colaboradorId
             var colaborador = await _context.Colaborador.FindAsync(colaboradorId);
             if (colaborador == null)
@@ -85,7 +83,7 @@ namespace ClinicaMed.Controllers
 
             // Associar o processo e o colaborador ao objeto Receita
             receita.Processo = processo;
-            receita.ColaboradorFK = colaboradorId; // Atribuir apenas o ID do colaborador para o Receita
+            receita.Colaborador = colaborador; 
 
             // Verificar a validade do ModelState agora que as propriedades estão preenchidas corretamente
             if (ModelState.IsValid)
