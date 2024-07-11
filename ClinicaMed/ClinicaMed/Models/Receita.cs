@@ -40,7 +40,7 @@ namespace ClinicaMed.Models
         /// Identificador do Processo referente à receita
         /// </summary>
         [ForeignKey(nameof(Processo))]
-        public int ProcessoFK { get; set; }
+        public int? ProcessoFK { get; set; }
         public Processo Processo { get; set; }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace ClinicaMed.Models
         /// </summary>
         // Deve ser uma chave estrangeira com a class Colaborador
         [ForeignKey(nameof(Colaborador))]
-        public int ColaboradorFK { get; set; }
+        public int? ColaboradorFK { get; set; }
         public Colaborador Colaborador { get; set; }
     }
 }

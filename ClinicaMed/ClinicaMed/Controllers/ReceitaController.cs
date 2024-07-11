@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -49,8 +47,15 @@ namespace ClinicaMed.Controllers
         // GET: Receita/Create
         public IActionResult Create(int processoId)
         {
-            ViewData["Title"] = "Criar Receita";
-            ViewData["ColaboradorFK"] = new SelectList(_context.Colaborador, "IdCol", "Apelido");
+            var medicosAssociados = _context.Processo
+                .Include(p => p.ListaProceColab)
+                .ThenInclude(pc => pc.Colaborador)
+                .Where(p => p.IdPro == processoId)
+                .SelectMany(p => p.ListaProceColab.Select(pc => pc.Colaborador))
+                .ToList();
+
+            ViewBag.ColaboradorFK = new SelectList(medicosAssociados.Select(c => new { c.IdCol, NomeCompleto = c.Nome + " " + c.Apelido }), "IdCol", "NomeCompleto");
+
             ViewData["ProcessoId"] = processoId;
 
             return View();
@@ -59,8 +64,30 @@ namespace ClinicaMed.Controllers
         // POST: Receita/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdRec,NumReceita,Notas,DataReceita,Estado,ProcessoFK,ColaboradorFK")] Receita receita)
+        public async Task<IActionResult> Create([Bind("IdRec,NumReceita,Notas,DataReceita,Estado,ProcessoFK,ColaboradorFK")] Receita receita, int processoId, int colaboradorId)
         {
+            processoId = ViewData["ProcessoId"] as int? ?? 0;
+
+            // Carregar o processo associado ao processoId
+            var processo = await _context.Processo.FindAsync(processoId);
+            if (processo == null)
+            {
+                return NotFound();
+            }
+
+            colaboradorId = ViewBag.ColaboradorFK;
+            // Carregar o colaborador associado ao colaboradorId
+            var colaborador = await _context.Colaborador.FindAsync(colaboradorId);
+            if (colaborador == null)
+            {
+                return NotFound();
+            }
+
+            // Associar o processo e o colaborador ao objeto Receita
+            receita.Processo = processo;
+            receita.ColaboradorFK = colaboradorId; // Atribuir apenas o ID do colaborador para o Receita
+
+            // Verificar a validade do ModelState agora que as propriedades estão preenchidas corretamente
             if (ModelState.IsValid)
             {
                 _context.Add(receita);
@@ -68,12 +95,19 @@ namespace ClinicaMed.Controllers
                 return RedirectToAction("Details", "Processo", new { id = receita.ProcessoFK });
             }
 
-            ViewData["ColaboradorFK"] = new SelectList(_context.Colaborador, "IdCol", "Apelido", receita.ColaboradorFK);
-            ViewData["ProcessoId"] = receita.ProcessoFK;
+            // Se o ModelState não for válido, carregar a lista de colaboradores associados ao processo
+            var medicosAssociados = _context.Processo
+                .Include(p => p.ListaProceColab)
+                .ThenInclude(pc => pc.Colaborador)
+                .Where(p => p.IdPro == processoId)
+                .SelectMany(p => p.ListaProceColab.Select(pc => pc.Colaborador))
+                .ToList();
+
+            ViewBag.ColaboradorFK = new SelectList(medicosAssociados.Select(c => new { c.IdCol, NomeCompleto = c.Nome + " " + c.Apelido }), "IdCol", "NomeCompleto", colaboradorId);
+            ViewData["ProcessoId"] = processoId;
 
             return View(receita);
         }
-
 
         // GET: Receita/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -94,8 +128,6 @@ namespace ClinicaMed.Controllers
         }
 
         // POST: Receita/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdRec,NumReceita,Notas,DataReceita,Estado,ProcessoFK,ColaboradorFK")] Receita receita)

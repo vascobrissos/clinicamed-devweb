@@ -42,6 +42,12 @@ namespace ClinicaMed.Data
                 .HasOne(p => p.Requisitante)
                 .WithMany(e => e.ListaProcesso)
                 .HasForeignKey(p => p.RequisitanteIdReq);// Ajustar a base de dados para a relação Processo-Requisitante
+
+            builder.Entity<Receita>()
+            .HasOne(r => r.Colaborador)
+            .WithMany()
+            .HasForeignKey(r => r.ColaboradorFK)
+            .OnDelete(DeleteBehavior.Restrict);
         }
 
         // definição das 'tabelas'

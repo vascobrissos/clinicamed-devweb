@@ -60,6 +60,7 @@ namespace ClinicaMed.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdExa,Nome,Apelido,Telemovel,Email,Sexo,Antecedentes,DataNascimento,Profissao,Pais,Morada,CodigoPostal,Localidade,Nacionalidade,NumUtente,CartaoCidadao,ValidadeCC,Nif,Seguradora,NumeroSeguro,FiliacaoMae,FiliacaoPai")] Examinando examinando, int? processoId)
         {
+
             if (ModelState.IsValid)
             {
                 _context.Add(examinando);
