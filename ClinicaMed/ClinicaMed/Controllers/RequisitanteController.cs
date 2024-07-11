@@ -188,14 +188,14 @@ namespace ClinicaMed.Controllers
 
 
             //BUscar o examinando pelo id fornecido
-            var examinando = await _context.Requisitante.FirstOrDefaultAsync(e => e.IdReq == id);
-            if (examinando == null)
+            var requisitante = await _context.Requisitante.FirstOrDefaultAsync(e => e.IdReq == id);
+            if (requisitante == null)
             {
                 return NotFound();
             }
 
             //guarda o processo na lista de processos do examinando
-            examinando.ListaProcesso.Add(processo);
+            requisitante.ListaProcesso.Add(processo);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Details", "Processo", new { id = processoId });

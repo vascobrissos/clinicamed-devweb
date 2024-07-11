@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Detalhes do Processo";
+    var medicosSelectList = ViewData["Medicos"] as SelectList;
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -63,6 +64,61 @@
                 <a asp-action="Details" asp-controller="Requisitante" asp-route-id="@Model.RequisitanteIdReq" class="btn btn-info">Ver Detalhes do Requisitante</a>
             </div>
         }
+        <dt class="col-sm-2">Médicos associados: </dt>
+        <!--For each de cada médico associado, apresentar o seu nome com dd-->
+        <dd class="col-sm-10">
+            @foreach(var medico in Model.ListaProceColab.Select(pc => pc.Colaborador))
+            {
+               <div>@medico.Nome @medico.Apelido</div>
+            }
+        </dd>
+        
+        <!--Caso o utilizador logado seja Administrador ou Administrativo, pode associar um médico ao processo-->
+        @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+        {
+            <div>
+                <h4>Associar Médico</h4>
+                <!--Verifica se o médico já foi associado antes-->
+                <!--Caso exista uma mensagem de erro a ser passada pelo controller, deve alertar o utilizador-->
+                @if (ViewData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger">
+                        @ViewData["ErrorMessage"]
+                    </div>
+                }
+                <form asp-action="AssociateMedico">
+                    <input type="hidden" name="processoId" value="@Model.IdPro" />
+                    <div class="form-group">
+                        <label class="control-label">Selecione um Médico</label>
+                        <select name="medicoId" asp-items="medicosSelectList" class="form-control"></select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Associar</button>
+                </form>
+            </div>    
+        }
+
+
+        <!--Associar receitas ao processo-->
+        <!-- Associar receitas ao processo -->
+        <dt class="col-sm-2">Receitas associadas:</dt>
+        <dd class="col-sm-10">
+            @foreach (var receita in Model.ListaReceita)
+            {
+                <div>
+                    <a asp-action="Details" asp-controller="Receita" asp-route-id="@receita.IdRec" class="btn btn-link">@receita.NumReceita</a>
+                    - @receita.DataReceita.ToShortDateString()
+                </div>
+            }
+        </dd>
+
+        @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+        {
+            <div>
+                <h4>Criar Receita</h4>
+                <a asp-action="Create" asp-controller="Receita" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Nova Receita</a>
+            </div>
+        }
+        
 
     </dl>
 </div>

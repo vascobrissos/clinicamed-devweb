@@ -6,6 +6,7 @@ using ClinicaMed.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Diagnostics;
 
 namespace ClinicaMed.Controllers
 {
@@ -29,13 +30,23 @@ namespace ClinicaMed.Controllers
         // Visualizar detalhes de um processo específico
         public IActionResult Details(int? id)
         {
-            var processo = _context.Processo.Include(p => p.Examinando).Include(p => p.Requisitante).FirstOrDefault(p => p.IdPro == id);
+            var processo = _context.Processo.Include(p => p.Examinando).Include(p => p.Requisitante).Include(p => p.ListaProceColab).ThenInclude(pc => pc.Colaborador).FirstOrDefault(p => p.IdPro == id);
             if (processo == null)
             {
                 return NotFound();
             }
 
-        
+            //Buscar médicos associados
+            var medicos = _context.Colaborador.Where(c => _context.UserRoles.Any(nur => nur.UserId == c.UserId && nur.RoleId == "med")).
+                Select(c => new
+                {
+                    c.IdCol,
+                    NomeCompleto = c.Nome + " " + c.Apelido
+                }).ToList();
+
+            ViewData["Medicos"] = new SelectList(medicos, "IdCol", "NomeCompleto");
+
+
             return View(processo);
         }
 
@@ -55,6 +66,51 @@ namespace ClinicaMed.Controllers
             _context.SaveChanges();
 
             return RedirectToAction(nameof(Details), new { id = newProcesso.IdPro });
+        }
+
+        //Associa médicos ao processo
+        [HttpPost]
+        public async Task<IActionResult> AssociateMedico(int processoId, int medicoId)
+        {
+            //Verificação se o médico selecionado já foi associado previamente
+            bool medicoJaAssociado = _context.ProcessoColaborador.Any(pc => pc.ProcessoFK == processoId && pc.ColaboradorFK == medicoId);
+
+            if (medicoJaAssociado)
+            {
+                ViewData["ErrorMessage"] = "Este médico já está associado ao processo.";
+                var processo = await _context.Processo
+                .Include(p => p.Examinando)
+                .Include(p => p.Requisitante)
+                .Include(p => p.ListaProceColab)
+                    .ThenInclude(pc => pc.Colaborador)
+                .FirstOrDefaultAsync(m => m.IdPro == processoId);
+
+                var medicos = _context.Colaborador
+                    .Where(c => _context.UserRoles.Any(nur => nur.UserId == c.UserId && nur.RoleId == "med"))
+                    .Select(c => new
+                    {
+                        c.IdCol,
+                        NomeCompleto = c.Nome + " " + c.Apelido
+                    })
+                    .ToList();
+
+                ViewData["Medicos"] = new SelectList(medicos, "IdCol", "NomeCompleto");
+
+                return View("Details", processo);
+            }
+
+            var processoColaborador = new ProcessoColaborador
+            {
+                ProcessoFK = processoId,
+                ColaboradorFK = medicoId,
+                DataAtribuicao = DateTime.Now,
+                DataRemocao = DateTime.MaxValue
+            };
+
+            _context.ProcessoColaborador.Add(processoColaborador);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = processoId });
         }
     }
 }
