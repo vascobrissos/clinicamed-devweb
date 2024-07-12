@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClinicaMed.Models;
+using ClinicaMed.ViewModels;
 using ClinicaMed.Data;
 using Microsoft.AspNetCore.Identity;
 
@@ -25,10 +26,40 @@ namespace ClinicaMed.Controllers
         }
 
         // GET: Colaboradores
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(await _context.Colaborador.ToListAsync());
+            ViewData["CurrentFilter"] = searchString;
+
+            var colaboradores = await _context.Colaborador.ToListAsync();
+            var viewModel = new List<ColaboradorViewModel>();
+
+            foreach (var colaborador in colaboradores)
+            {
+                var user = await _userManager.FindByIdAsync(colaborador.UserId);
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault();
+                var username = await _userManager.GetUserNameAsync(user);
+                var email = await _userManager.GetEmailAsync(user);
+                var accountStatus = (user.LockoutEnd == null || user.LockoutEnd <= DateTime.Now) ? "Ativa" : "Inativa";
+
+                viewModel.Add(new ColaboradorViewModel
+                {
+                    Colaborador = colaborador,
+                    Role = role,
+                    Username = username,
+                    Email = email,
+                    AccountStatus = accountStatus
+                });
+            }
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                viewModel = viewModel.Where(v => v.Username.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            return View(viewModel);
         }
+
 
         // GET: Colaboradores/Create
         public IActionResult Create()
@@ -36,20 +67,18 @@ namespace ClinicaMed.Controllers
             return View();
         }
 
-
         // POST: Colaboradores/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string EmailCol, string Role, [Bind("UserId,NomeApresentacao,Nome,Apelido,Telemovel,Sexo,DataNascimento,Pais,Morada,CodPostal,Localidade,Nacionalidade,Nif,EstadoCivil,NumOrdem")] Colaborador colaborador)
         {
-
             if (ModelState.IsValid)
             {
                 // Criação do utilizador na ASP.NET Core Identity com password específica
                 var apelidoParts = colaborador.Apelido.Split(' ');
                 string FormattedUsername = colaborador.Nome[0].ToString().ToLower() + apelidoParts[0].ToLower();
 
-                var user = new IdentityUser { UserName = FormattedUsername, Email = EmailCol, EmailConfirmed=true};
+                var user = new IdentityUser { UserName = FormattedUsername, Email = EmailCol, EmailConfirmed = true };
                 var result = await _userManager.CreateAsync(user, "Alterame123@@");
 
                 if (result.Succeeded)
@@ -176,11 +205,6 @@ namespace ClinicaMed.Controllers
             return View(colaborador);
         }
 
-
-
-        //ALTERAR ABAIXO PARA DESATIVAR/ATIVAR EM VEZ DE APAGAR (users aumentar lockoutend)
-
-
         // GET: Colaboradores/Toggle/5
         public async Task<IActionResult> Toggle(int? id)
         {
@@ -196,8 +220,29 @@ namespace ClinicaMed.Controllers
                 return NotFound();
             }
 
-            return View(colaborador);
+            // Obter o utilizador da ASP.NET Core Identity associado ao colaborador
+            var user = await _userManager.FindByIdAsync(colaborador.UserId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Verificar o estado de LockoutEnd e definir a nova data
+            if (user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow)
+            {
+                // Desativar a conta (configurar LockoutEnd para null)
+                await _userManager.SetLockoutEndDateAsync(user, null);
+            }
+            else
+            {
+                // Ativar a conta (definir LockoutEnd para o futuro)
+                await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddYears(100)); // ou outro valor que desejar
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
+
 
         // POST: Colaboradores/Toggle/5
         [HttpPost, ActionName("Toggle")]
@@ -207,8 +252,30 @@ namespace ClinicaMed.Controllers
             var colaborador = await _context.Colaborador.FindAsync(id);
             if (colaborador != null)
             {
-                _context.Colaborador.Remove(colaborador);
-                await _context.SaveChangesAsync();
+                var user = await _userManager.FindByIdAsync(colaborador.UserId);
+                if (user != null)
+                {
+                    if (user.LockoutEnd == null || user.LockoutEnd <= DateTime.Now)
+                    {
+                        // Desativar a conta (definir LockoutEnd para uma data futura)
+                        user.LockoutEnd = DateTime.Now.AddYears(100);
+                    }
+                    else
+                    {
+                        // Ativar a conta (definir LockoutEnd para null)
+                        user.LockoutEnd = null;
+                    }
+
+                    await _userManager.UpdateAsync(user);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            else
+            {
+                return NotFound();
             }
             return RedirectToAction(nameof(Index));
         }
