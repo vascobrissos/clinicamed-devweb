@@ -5,124 +5,156 @@
     var medicosSelectList = ViewData["Medicos"] as SelectList;
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1 class="text-center">@ViewData["Title"]</h1>
 
-<div>
-    <h4>Processo</h4>
+<div class="container mt-4">
+    <h4 class="mb-3">Informações do Processo</h4>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">Id</dt>
-        <dd class="col-sm-10">@Model.IdPro</dd>
+    <div class="row">
+        <div class="col-md-6">
+            <dl class="row">
+                <dt class="col-sm-5">Id Interno</dt>
+                <dd class="col-sm-7">@Model.IdInterno</dd>
 
-        <dt class="col-sm-2">Id Interno</dt>
-        <dd class="col-sm-10">@Model.IdInterno</dd>
+                <dt class="col-sm-5">Data de Criação</dt>
+                <dd class="col-sm-7">@Model.DataCriacao.ToShortDateString()</dd>
 
-        <dt class="col-sm-2">Data de Criação</dt>
-        <dd class="col-sm-10">@Model.DataCriacao</dd>
+                <dt class="col-sm-5">Data de Início</dt>
+                <dd class="col-sm-7">@Model.DataInicio.ToShortDateString()</dd>
 
-        <dt class="col-sm-2">Data de Início</dt>
-        <dd class="col-sm-10">@Model.DataInicio</dd>
+                <dt class="col-sm-5">Data de Término</dt>
+                <dd class="col-sm-7">@Model.DataTermino?.ToShortDateString()</dd>
 
-        <dt class="col-sm-2">Data de Término</dt>
-        <dd class="col-sm-10">@Model.DataTermino</dd>
+                <dt class="col-sm-5">Estado</dt>
+                <dd class="col-sm-7">@(Model.Estado == 0 ? "Terminado" : "Ativo")</dd>
+            </dl>
 
-        <dt class="col-sm-2">Estado</dt>
-        <dd class="col-sm-10">@Model.Estado</dd>
-
-        <dt class="col-sm-2">Examinando</dt>
-        <!--Caso o examinando não esteja associado-->
-        @if(Model.ExaminandoIdExa == null)
-        {
-            <dd class="col-sm-10">Não Atribuido</dd>
-            <div>
-                <a asp-action="Create" asp-controller="Examinando" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Novo Examinando</a>
-                <a asp-action="Index" asp-controller="Examinando" asp-route-processoId="@Model.IdPro" class="btn btn-primary">Associar Examinando Existente</a>
-            </div>
-        }
-        else
-        {
-            <dd class="col-sm-10">@Model.Examinando.Nome @Model.Examinando.Apelido</dd>
-            <div>
-                <a asp-action="Details" asp-controller="Examinando" asp-route-id="@Model.ExaminandoIdExa" class="btn btn-info">Ver Detalhes do Examinando</a>
-            </div>
-        }
-
-        <dt class="col-sm-2">Requisitante</dt>
-        <!--Caso o requisitante não esteja associado-->
-        @if(Model.RequisitanteIdReq == null)
-        {
-            <dd class="col-sm-10">Não Atribuido</dd>
-            <div>
-                <a asp-action="Create" asp-controller="Requisitante" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Novo Requisitante</a>
-                <a asp-action="Index" asp-controller="Requisitante" asp-route-processoId="@Model.IdPro" class="btn btn-primary">Associar Requisitante Existente</a>
-            </div>
-        }
-        else
-        {
-            <dd class="col-sm-10">@Model.Requisitante.Nome @Model.Requisitante.Apelido</dd>
-            <div>
-                <a asp-action="Details" asp-controller="Requisitante" asp-route-id="@Model.RequisitanteIdReq" class="btn btn-info">Ver Detalhes do Requisitante</a>
-            </div>
-        }
-        <dt class="col-sm-2">Médicos associados: </dt>
-        <!--For each de cada médico associado, apresentar o seu nome com dd-->
-        <dd class="col-sm-10">
-            @foreach(var medico in Model.ListaProceColab.Select(pc => pc.Colaborador))
-            {
-               <div>@medico.Nome @medico.Apelido</div>
-            }
-        </dd>
-        
-        <!--Caso o utilizador logado seja Administrador ou Administrativo, pode associar um médico ao processo-->
-        @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
-        {
-            <div>
-                <h4>Associar Médico</h4>
-                <!--Verifica se o médico já foi associado antes-->
-                <!--Caso exista uma mensagem de erro a ser passada pelo controller, deve alertar o utilizador-->
-                @if (ViewData["ErrorMessage"] != null)
+            <dt class="col-sm-5">Médicos associados:</dt>
+            <dd class="col-sm-7">
+                @if (Model.ListaProceColab != null && Model.ListaProceColab.Any())
                 {
-                    <div class="alert alert-danger">
-                        @ViewData["ErrorMessage"]
+                    foreach (var pc in Model.ListaProceColab)
+                    {
+                        var medico = pc.Colaborador;
+                        <div>@medico.Nome @medico.Apelido</div>
+                    }
+                }
+                else
+                {
+                    <div class="text-muted">Nenhum médico associado.</div>
+                }
+            </dd>
+        </div>
+
+        <div class="col-md-6">
+            <h5>Requisitantes:</h5>
+            @if (Model.Requisitantes != null && Model.Requisitantes.Any())
+            {
+                foreach (var requisitante in Model.Requisitantes)
+                {
+                    <div>@requisitante.Nome @requisitante.Apelido</div>
+                    <div>
+                        <a asp-action="Edit" asp-controller="Requisitante" asp-route-id="@requisitante.IdReq" class="btn btn-secondary btn-sm">Editar</a>
                     </div>
                 }
-                <form asp-action="AssociateMedico">
-                    <input type="hidden" name="processoId" value="@Model.IdPro" />
-                    <div class="form-group">
-                        <label class="control-label">Selecione um Médico</label>
-                        <select name="medicoId" asp-items="medicosSelectList" class="form-control"></select>
+            }
+            else
+            {
+                <div class="text-muted">Nenhum requisitante associado.</div>
+                <a asp-action="Create" asp-controller="Requisitante" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Requisitante</a>
+            }
+
+            <h5 class="mt-3">Examinandos:</h5>
+            @if (Model.Examinandos != null && Model.Examinandos.Any())
+            {
+                foreach (var examinando in Model.Examinandos)
+                {
+                    <div>@examinando.Nome @examinando.Apelido</div>
+                    <div>
+                        <a asp-action="Edit" asp-controller="Examinando" asp-route-id="@examinando.IdExa" class="btn btn-secondary btn-sm">Editar</a>
                     </div>
-                    <button type="submit" class="btn btn-primary">Associar</button>
-                </form>
-            </div>    
+                }
+            }
+            else
+            {
+                <div class="text-muted">Nenhum examinando associado.</div>
+                <a asp-action="Create" asp-controller="Examinando" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Examinando</a>
+            }
+        </div>
+    </div>
+
+    @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+    {
+        <div class="mt-4">
+            <h5>Associar Médico</h5>
+            @if (ViewData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    @ViewData["ErrorMessage"]
+                </div>
+            }
+            <form asp-action="AssociateMedico" method="post">
+                <input type="hidden" name="processoId" value="@Model.IdPro" />
+                <div class="form-group">
+                    <label class="control-label">Selecione um Médico</label>
+                    <select name="medicoId" asp-items="medicosSelectList" class="form-control"></select>
+                </div>
+                <button type="submit" class="btn btn-primary">Associar</button>
+            </form>
+        </div>
+    }
+
+    <div class="mt-4">
+        <h5 class="mt-3">Receitas</h5>
+        @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+        {
+            <a asp-action="Create" asp-controller="Receita" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Receita</a>
         }
 
-
-        <!--Associar receitas ao processo-->
-        <!-- Associar receitas ao processo -->
-        <dt class="col-sm-2">Receitas associadas:</dt>
-        <dd class="col-sm-10">
-            @foreach (var receita in Model.ListaReceita)
+        <h5>Receitas associadas:</h5>
+        @if (Model.ListaReceita != null && Model.ListaReceita.Any())
+        {
+            foreach (var receita in Model.ListaReceita)
             {
                 <div>
                     <a asp-action="Details" asp-controller="Receita" asp-route-id="@receita.IdRec" class="btn btn-link">@receita.NumReceita</a>
                     - @receita.DataReceita.ToShortDateString()
                 </div>
             }
-        </dd>
-
-        @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+        }
+        else
         {
-            <div>
-                <h4>Criar Receita</h4>
-                <a asp-action="Create" asp-controller="Receita" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Nova Receita</a>
-            </div>
+            <div class="text-muted">Não há receitas associadas.</div>
         }
 
-        
+        <h5 class="mt-3">Consultas</h5>
+        @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+        {
+            <a asp-action="Create" asp-controller="Consulta" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Consulta</a>
+        }
+    </div>
 
-    </dl>
-</div>
-<div>
-    <a asp-action="Index" class="btn btn-primary">Voltar à Lista</a>
+    @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+    {
+        <div class="mt-4">
+            @if (Model.Estado == 0)
+            {
+                <form asp-action="Reactivate" method="post">
+                    <input type="hidden" name="id" value="@Model.IdPro" />
+                    <button type="submit" class="btn btn-success" onclick="return confirm('Tem certeza que deseja reativar este processo?');">Re-Ativar Processo</button>
+                </form>
+            }
+            else if (Model.Estado == 1)
+            {
+                <form asp-action="Terminate" method="post">
+                    <input type="hidden" name="id" value="@Model.IdPro" />
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja terminar este processo?');">Terminar Processo</button>
+                </form>
+            }
+        </div>
+    }
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-primary">Voltar à Lista</a>
+    </div>
 </div>

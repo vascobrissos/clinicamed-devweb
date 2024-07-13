@@ -37,7 +37,7 @@
 
             <div class="form-group">
                 <label class="control-label">Selecione um Médico</label>
-                <select name="colaboradorId" class="form-control">
+                <select name="colaboradorId" class="form-control" required>
                     @Html.Raw(ViewData["MedicosOptions"])
                 </select>
             </div>
@@ -47,7 +47,7 @@
             <input type="hidden" name="processoId" value="@processoId" />
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Criar</button>
-                <a asp-action="Details" asp-controller="Processo" asp-route-id="ViewBag.ProcessoId" class="btn btn-secondary">Cancelar</a>
+                <a asp-action="Details" asp-controller="Processo" asp-route-id="@ViewBag.ProcessoId" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>

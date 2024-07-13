@@ -6,36 +6,59 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Criar Novo Processo</a>
-</p>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Create" class="btn btn-primary">Criar Processo</a>
+    <input type="text" id="searchBox" class="form-control w-25" placeholder="Procure pelo ID Interno..." onkeyup="filterTable()">
+</div>
 
-<table class="table">
-    <thead>
+<table class="table table-striped table-hover">
+    <thead class="thead-dark">
         <tr>
-            <th>Id</th>
-            <th>Id Interno</th>
-            <th>Data de Criação</th>
+            <th>ID Interno</th>
             <th>Data de Início</th>
             <th>Data de Término</th>
             <th>Estado</th>
-            <th></th>
+            <th>Ações</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="processTable">
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.IdPro</td>
                 <td>@item.IdInterno</td>
-                <td>@item.DataCriacao</td>
-                <td>@item.DataInicio</td>
-                <td>@item.DataTermino</td>
-                <td>@item.Estado</td>
+                <td>@item.DataInicio.ToString("dd/MM/yyyy")</td>
+                <td>@item.DataTermino?.ToString("dd/MM/yyyy")</td>
+                <td>@(item.Estado == 0 ? "Terminado" : "Ativo")</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.IdPro" class="btn btn-info">Detalhes</a>
+                    <a asp-action="Details" asp-route-id="@item.IdPro" class="btn btn-info btn-sm">Detalhes</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        function filterTable() {
+            const searchBox = document.getElementById('searchBox');
+            const filter = searchBox.value.toUpperCase();
+            const table = document.getElementById('processTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                if (cells.length > 0) {
+                    const idInternoCell = cells[0];
+                    if (idInternoCell) {
+                        const idInternoText = idInternoCell.textContent || idInternoCell.innerText;
+                        if (idInternoText.toUpperCase().indexOf(filter) > -1) {
+                            rows[i].style.display = '';
+                        } else {
+                            rows[i].style.display = 'none';
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+}

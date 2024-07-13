@@ -118,6 +118,9 @@
                 <input asp-for="FiliacaoPai" class="form-control" />
                 <span asp-validation-for="FiliacaoPai" class="text-danger"></span>
             </div>
+
+            <input type="hidden" name="processoId" value="@Model.ProcessoId" />
+
             <div class="form-group">
                 <br />
                 <input type="submit" value="Alterar" class="btn btn-primary" />
@@ -127,7 +130,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Voltar à lista</a>
+    <a asp-action="Details" asp-controller="Processo" asp-route-id="@Model.ProcessoId" class="btn btn-primary">Voltar ao Processo</a>
 </div>
 
 @section Scripts {

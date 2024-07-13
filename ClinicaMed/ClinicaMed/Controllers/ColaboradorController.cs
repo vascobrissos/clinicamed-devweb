@@ -11,9 +11,11 @@ using ClinicaMed.Models;
 using ClinicaMed.ViewModels;
 using ClinicaMed.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicaMed.Controllers
 {
+    [Authorize]
     public class ColaboradorController : Controller
     {
         private readonly ApplicationDbContext _context;

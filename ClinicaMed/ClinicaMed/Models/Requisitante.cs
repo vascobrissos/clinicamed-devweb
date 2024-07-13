@@ -7,7 +7,6 @@ namespace ClinicaMed.Models
     {
         public Requisitante()
         {
-            ListaProcesso = new HashSet<Processo>();
         }
 
         /// <summary>
@@ -94,8 +93,7 @@ namespace ClinicaMed.Models
         [Required]
         public string Nif { get; set; }
 
-        //Lista referente á tabela de Processos do relacionamento 1-N
-        public ICollection<Processo> ListaProcesso { get; set; }
-
+        public int ProcessoId { get; set; }
+        public Processo? Processo { get; set; }
     }
 }

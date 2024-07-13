@@ -23,7 +23,7 @@ namespace ClinicaMed.Models
         /// Segue regras de formatação (ano, tipo)
         /// </summary>
         [StringLength(100)]
-        public string IdInterno { get; set; }
+        public string? IdInterno { get; set; }
 
         /// <summary>
         /// Data da criação do processo
@@ -39,7 +39,7 @@ namespace ClinicaMed.Models
         /// <summary>
         /// Data do termino do processo
         /// </summary>
-        public DateOnly DataTermino { get; set; }
+        public DateOnly? DataTermino { get; set; }
 
         /// <summary>
         /// Estado do processo
@@ -55,14 +55,8 @@ namespace ClinicaMed.Models
         //Lista que referencia a relação do tipo 1-N com a class Consulta
         public ICollection<Consulta> ListaConsulta { get; set; }
 
-        //Referencia o examinando
-        [ForeignKey(nameof(Examinando))]
-        public int? ExaminandoIdExa { get; set; }
-        public Examinando Examinando { get; set; }
+        public ICollection<Examinando> Examinandos { get; set; }
 
-        // Referencia o requisitante
-        [ForeignKey(nameof(Requisitante))]
-        public int? RequisitanteIdReq { get; set; }
-        public Requisitante Requisitante { get; set; }
+        public ICollection<Requisitante> Requisitantes { get; set; }
     }
 }

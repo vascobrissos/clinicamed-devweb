@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClinicaMed.Data;
 using ClinicaMed.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicaMed.Controllers
 {
+    [Authorize]
     public class ReceitaController : Controller
     {
         private readonly ApplicationDbContext _context;

@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClinicaMed.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240703191744_FKCorrectionExaminandoProcesso")]
-    partial class FKCorrectionExaminandoProcesso
+    [Migration("20240713011417_Segunda")]
+    partial class Segunda
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -222,6 +222,9 @@ namespace ClinicaMed.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("ProcessoId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Profissao")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -245,6 +248,8 @@ namespace ClinicaMed.Migrations
 
                     b.HasKey("IdExa");
 
+                    b.HasIndex("ProcessoId");
+
                     b.ToTable("Examinando");
                 });
 
@@ -262,28 +267,17 @@ namespace ClinicaMed.Migrations
                     b.Property<DateOnly>("DataInicio")
                         .HasColumnType("date");
 
-                    b.Property<DateOnly>("DataTermino")
+                    b.Property<DateOnly?>("DataTermino")
                         .HasColumnType("date");
 
                     b.Property<int>("Estado")
                         .HasColumnType("int");
 
-                    b.Property<int>("ExaminandoIdExa")
-                        .HasColumnType("int");
-
                     b.Property<string>("IdInterno")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("RequisitanteIdReq")
-                        .HasColumnType("int");
-
                     b.HasKey("IdPro");
-
-                    b.HasIndex("ExaminandoIdExa");
-
-                    b.HasIndex("RequisitanteIdReq");
 
                     b.ToTable("Processo");
                 });
@@ -325,7 +319,10 @@ namespace ClinicaMed.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRec"));
 
-                    b.Property<int>("ColaboradorFK")
+                    b.Property<int?>("ColaboradorFK")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ColaboradorIdCol")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DataReceita")
@@ -344,12 +341,14 @@ namespace ClinicaMed.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<int>("ProcessoFK")
+                    b.Property<int?>("ProcessoFK")
                         .HasColumnType("int");
 
                     b.HasKey("IdRec");
 
                     b.HasIndex("ColaboradorFK");
+
+                    b.HasIndex("ColaboradorIdCol");
 
                     b.HasIndex("ProcessoFK");
 
@@ -409,7 +408,7 @@ namespace ClinicaMed.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("ProcessoFK")
+                    b.Property<int>("ProcessoId")
                         .HasColumnType("int");
 
                     b.Property<int>("Sexo")
@@ -422,7 +421,7 @@ namespace ClinicaMed.Migrations
 
                     b.HasKey("IdReq");
 
-                    b.HasIndex("ProcessoFK");
+                    b.HasIndex("ProcessoId");
 
                     b.ToTable("Requisitante");
                 });
@@ -668,19 +667,15 @@ namespace ClinicaMed.Migrations
                     b.Navigation("Processo");
                 });
 
-            modelBuilder.Entity("ClinicaMed.Models.Processo", b =>
+            modelBuilder.Entity("ClinicaMed.Models.Examinando", b =>
                 {
-                    b.HasOne("ClinicaMed.Models.Examinando", "Examinando")
-                        .WithMany("ListaProcesso")
-                        .HasForeignKey("ExaminandoIdExa")
+                    b.HasOne("ClinicaMed.Models.Processo", "Processo")
+                        .WithMany("Examinandos")
+                        .HasForeignKey("ProcessoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClinicaMed.Models.Requisitante", null)
-                        .WithMany("ListaProcesso")
-                        .HasForeignKey("RequisitanteIdReq");
-
-                    b.Navigation("Examinando");
+                    b.Navigation("Processo");
                 });
 
             modelBuilder.Entity("ClinicaMed.Models.ProcessoColaborador", b =>
@@ -705,16 +700,17 @@ namespace ClinicaMed.Migrations
             modelBuilder.Entity("ClinicaMed.Models.Receita", b =>
                 {
                     b.HasOne("ClinicaMed.Models.Colaborador", "Colaborador")
-                        .WithMany("ListaReceita")
+                        .WithMany()
                         .HasForeignKey("ColaboradorFK")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ClinicaMed.Models.Colaborador", null)
+                        .WithMany("ListaReceita")
+                        .HasForeignKey("ColaboradorIdCol");
 
                     b.HasOne("ClinicaMed.Models.Processo", "Processo")
                         .WithMany("ListaReceita")
-                        .HasForeignKey("ProcessoFK")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProcessoFK");
 
                     b.Navigation("Colaborador");
 
@@ -724,8 +720,8 @@ namespace ClinicaMed.Migrations
             modelBuilder.Entity("ClinicaMed.Models.Requisitante", b =>
                 {
                     b.HasOne("ClinicaMed.Models.Processo", "Processo")
-                        .WithMany()
-                        .HasForeignKey("ProcessoFK")
+                        .WithMany("Requisitantes")
+                        .HasForeignKey("ProcessoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -792,23 +788,17 @@ namespace ClinicaMed.Migrations
                     b.Navigation("ListaReceita");
                 });
 
-            modelBuilder.Entity("ClinicaMed.Models.Examinando", b =>
-                {
-                    b.Navigation("ListaProcesso");
-                });
-
             modelBuilder.Entity("ClinicaMed.Models.Processo", b =>
                 {
+                    b.Navigation("Examinandos");
+
                     b.Navigation("ListaConsulta");
 
                     b.Navigation("ListaProceColab");
 
                     b.Navigation("ListaReceita");
-                });
 
-            modelBuilder.Entity("ClinicaMed.Models.Requisitante", b =>
-                {
-                    b.Navigation("ListaProcesso");
+                    b.Navigation("Requisitantes");
                 });
 #pragma warning restore 612, 618
         }

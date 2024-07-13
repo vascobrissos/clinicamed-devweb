@@ -68,6 +68,9 @@
                 <input asp-for="Nif" class="form-control" />
                 <span asp-validation-for="Nif" class="text-danger"></span>
             </div>
+
+            <input type="hidden" name="processoId" value="@Model.ProcessoId" />
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -76,7 +79,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Details" asp-controller="Processo" asp-route-id="@Model.ProcessoId" class="btn btn-primary">Voltar ao Processo</a>
 </div>
 
 @section Scripts {

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ClinicaMed.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialWithRoles : Migration
+    public partial class Primeira : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -72,7 +72,7 @@ namespace ClinicaMed.Migrations
                     Nif = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
                     EstadoCivil = table.Column<int>(type: "int", nullable: false),
                     NumOrdem = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -80,59 +80,20 @@ namespace ClinicaMed.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Examinando",
+                name: "Processo",
                 columns: table => new
                 {
-                    IdExa = table.Column<int>(type: "int", nullable: false)
+                    IdPro = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Apelido = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Telemovel = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Sexo = table.Column<int>(type: "int", nullable: false),
-                    Antecedentes = table.Column<string>(type: "nvarchar(max)", maxLength: 10000, nullable: false),
-                    DataNascimento = table.Column<DateOnly>(type: "date", nullable: false),
-                    Profissao = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Pais = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Morada = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CodigoPostal = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Localidade = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Nacionalidade = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    NumUtente = table.Column<int>(type: "int", nullable: false),
-                    CartaoCidadao = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
-                    ValidadeCC = table.Column<DateOnly>(type: "date", nullable: false),
-                    Nif = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
-                    Seguradora = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    NumeroSeguro = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    FiliacaoMae = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    FiliacaoPai = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    IdInterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataInicio = table.Column<DateOnly>(type: "date", nullable: false),
+                    DataTermino = table.Column<DateOnly>(type: "date", nullable: true),
+                    Estado = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Examinando", x => x.IdExa);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Requisitante",
-                columns: table => new
-                {
-                    IdReq = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Apelido = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Telemovel = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Sexo = table.Column<int>(type: "int", nullable: false),
-                    Pais = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Morada = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CodigoPostal = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Localidade = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Nacionalidade = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Nif = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Requisitante", x => x.IdReq);
+                    table.PrimaryKey("PK_Processo", x => x.IdPro);
                 });
 
             migrationBuilder.CreateTable(
@@ -242,37 +203,6 @@ namespace ClinicaMed.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Processo",
-                columns: table => new
-                {
-                    IdPro = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IdInterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DataInicio = table.Column<DateOnly>(type: "date", nullable: false),
-                    DataTermino = table.Column<DateOnly>(type: "date", nullable: false),
-                    Estado = table.Column<int>(type: "int", nullable: false),
-                    ExaminandoFK = table.Column<int>(type: "int", nullable: false),
-                    RequisitanteFK = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Processo", x => x.IdPro);
-                    table.ForeignKey(
-                        name: "FK_Processo_Examinando_ExaminandoFK",
-                        column: x => x.ExaminandoFK,
-                        principalTable: "Examinando",
-                        principalColumn: "IdExa",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Processo_Requisitante_RequisitanteFK",
-                        column: x => x.RequisitanteFK,
-                        principalTable: "Requisitante",
-                        principalColumn: "IdReq",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Consulta",
                 columns: table => new
                 {
@@ -296,6 +226,46 @@ namespace ClinicaMed.Migrations
                     table.ForeignKey(
                         name: "FK_Consulta_Processo_ProcessoFK",
                         column: x => x.ProcessoFK,
+                        principalTable: "Processo",
+                        principalColumn: "IdPro",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Examinando",
+                columns: table => new
+                {
+                    IdExa = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Apelido = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Telemovel = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Sexo = table.Column<int>(type: "int", nullable: false),
+                    Antecedentes = table.Column<string>(type: "nvarchar(max)", maxLength: 10000, nullable: false),
+                    DataNascimento = table.Column<DateOnly>(type: "date", nullable: false),
+                    Profissao = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Pais = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Morada = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CodigoPostal = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Localidade = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Nacionalidade = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    NumUtente = table.Column<int>(type: "int", nullable: false),
+                    CartaoCidadao = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    ValidadeCC = table.Column<DateOnly>(type: "date", nullable: false),
+                    Nif = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
+                    Seguradora = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    NumeroSeguro = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    FiliacaoMae = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    FiliacaoPai = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    ProcessoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Examinando", x => x.IdExa);
+                    table.ForeignKey(
+                        name: "FK_Examinando_Processo_ProcessoId",
+                        column: x => x.ProcessoId,
                         principalTable: "Processo",
                         principalColumn: "IdPro",
                         onDelete: ReferentialAction.Cascade);
@@ -339,8 +309,9 @@ namespace ClinicaMed.Migrations
                     Notas = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     DataReceita = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Estado = table.Column<int>(type: "int", nullable: false),
-                    ProcessoFK = table.Column<int>(type: "int", nullable: false),
-                    ColaboradorFK = table.Column<int>(type: "int", nullable: false)
+                    ProcessoFK = table.Column<int>(type: "int", nullable: true),
+                    ColaboradorFK = table.Column<int>(type: "int", nullable: true),
+                    ColaboradorIdCol = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -350,10 +321,44 @@ namespace ClinicaMed.Migrations
                         column: x => x.ColaboradorFK,
                         principalTable: "Colaborador",
                         principalColumn: "IdCol",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Receita_Colaborador_ColaboradorIdCol",
+                        column: x => x.ColaboradorIdCol,
+                        principalTable: "Colaborador",
+                        principalColumn: "IdCol");
                     table.ForeignKey(
                         name: "FK_Receita_Processo_ProcessoFK",
                         column: x => x.ProcessoFK,
+                        principalTable: "Processo",
+                        principalColumn: "IdPro");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Requisitante",
+                columns: table => new
+                {
+                    IdReq = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Apelido = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Telemovel = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Sexo = table.Column<int>(type: "int", nullable: false),
+                    Pais = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Morada = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CodigoPostal = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Localidade = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Nacionalidade = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Nif = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
+                    ProcessoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Requisitante", x => x.IdReq);
+                    table.ForeignKey(
+                        name: "FK_Requisitante_Processo_ProcessoId",
+                        column: x => x.ProcessoId,
                         principalTable: "Processo",
                         principalColumn: "IdPro",
                         onDelete: ReferentialAction.Cascade);
@@ -419,14 +424,9 @@ namespace ClinicaMed.Migrations
                 column: "ProcessoFK");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Processo_ExaminandoFK",
-                table: "Processo",
-                column: "ExaminandoFK");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Processo_RequisitanteFK",
-                table: "Processo",
-                column: "RequisitanteFK");
+                name: "IX_Examinando_ProcessoId",
+                table: "Examinando",
+                column: "ProcessoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProcessoColaborador_ColaboradorFK",
@@ -444,9 +444,19 @@ namespace ClinicaMed.Migrations
                 column: "ColaboradorFK");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Receita_ColaboradorIdCol",
+                table: "Receita",
+                column: "ColaboradorIdCol");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Receita_ProcessoFK",
                 table: "Receita",
                 column: "ProcessoFK");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Requisitante_ProcessoId",
+                table: "Requisitante",
+                column: "ProcessoId");
         }
 
         /// <inheritdoc />
@@ -471,10 +481,16 @@ namespace ClinicaMed.Migrations
                 name: "Consulta");
 
             migrationBuilder.DropTable(
+                name: "Examinando");
+
+            migrationBuilder.DropTable(
                 name: "ProcessoColaborador");
 
             migrationBuilder.DropTable(
                 name: "Receita");
+
+            migrationBuilder.DropTable(
+                name: "Requisitante");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -487,12 +503,6 @@ namespace ClinicaMed.Migrations
 
             migrationBuilder.DropTable(
                 name: "Processo");
-
-            migrationBuilder.DropTable(
-                name: "Examinando");
-
-            migrationBuilder.DropTable(
-                name: "Requisitante");
         }
     }
 }

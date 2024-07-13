@@ -33,15 +33,15 @@ namespace ClinicaMed.Data
                 new IdentityRole { Id = "med", Name = "Medico", NormalizedName = "MEDICO" }
                 );
 
-            builder.Entity<Processo>()
-                .HasOne(p => p.Examinando)
-                .WithMany(e => e.ListaProcesso)
-                .HasForeignKey(p => p.ExaminandoIdExa);// Ajustar a base de dados para a relação Processo-Examinando
+            builder.Entity<Examinando>()
+            .HasOne(e => e.Processo)
+            .WithMany(p => p.Examinandos)
+            .HasForeignKey(e => e.ProcessoId);
 
-            builder.Entity<Processo>()
-                .HasOne(p => p.Requisitante)
-                .WithMany(e => e.ListaProcesso)
-                .HasForeignKey(p => p.RequisitanteIdReq);// Ajustar a base de dados para a relação Processo-Requisitante
+            builder.Entity<Requisitante>()
+            .HasOne(e => e.Processo)
+            .WithMany(p => p.Requisitantes)
+            .HasForeignKey(e => e.ProcessoId);
 
             builder.Entity<Receita>()
             .HasOne(r => r.Colaborador)

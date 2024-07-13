@@ -23,29 +23,42 @@ namespace ClinicaMed.Controllers
         // Listar todos os processos
         public IActionResult Index()
         {
-            var processos = _context.Processo.Include(p => p.Examinando).ToList();
+            var processos = _context.Processo.Include(p => p.Examinandos).ToList();
             return View(processos);
         }
 
         // Visualizar detalhes de um processo específico
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
-            var processo = _context.Processo.Include(p => p.Examinando).Include(p => p.Requisitante).Include(p => p.ListaProceColab).ThenInclude(pc => pc.Colaborador).Include(p => p.ListaReceita).FirstOrDefault(p => p.IdPro == id);
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            // Buscar o processo pelo ID, incluindo Examinandos, Requisitantes e Colaboradores
+            var processo = await _context.Processo
+                .Include(p => p.Examinandos)   // Incluir Examinandos
+                .Include(p => p.Requisitantes)  // Incluir Requisitantes
+                .Include(p => p.ListaProceColab) // Incluir Colaboradores
+                    .ThenInclude(pc => pc.Colaborador) // Incluir detalhes do Colaborador
+                .Include(p => p.ListaReceita)   // Incluir Receitas
+                .FirstOrDefaultAsync(p => p.IdPro == id); // Supondo que IdPro é a chave primária
+
             if (processo == null)
             {
                 return NotFound();
             }
 
-            //Buscar médicos associados
-            var medicos = _context.Colaborador.Where(c => _context.UserRoles.Any(nur => nur.UserId == c.UserId && nur.RoleId == "med")).
-                Select(c => new
+            // Buscar médicos associados
+            var medicos = await _context.Colaborador
+                .Where(c => _context.UserRoles.Any(nur => nur.UserId == c.UserId && nur.RoleId == "med"))
+                .Select(c => new
                 {
                     c.IdCol,
                     NomeCompleto = c.Nome + " " + c.Apelido
-                }).ToList();
+                }).ToListAsync();
 
             ViewData["Medicos"] = new SelectList(medicos, "IdCol", "NomeCompleto");
-
 
             return View(processo);
         }
@@ -53,20 +66,30 @@ namespace ClinicaMed.Controllers
         // Criar um processo
         public IActionResult Create()
         {
+            // Cria um novo processo com os campos iniciais necessários
             var newProcesso = new Processo
             {
-                IdInterno = Guid.NewGuid().ToString(), // Gera um ID interno único //ALTERAR PARA FORMATACAO ANO E ID
                 DataCriacao = DateTime.Now,
                 DataInicio = DateOnly.FromDateTime(DateTime.Now),
-                DataTermino = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
-                Estado = 1, // Estado inicial
+                Estado = 1 // Estado inicial
             };
 
+            // Adiciona o novo processo ao contexto
             _context.Processo.Add(newProcesso);
+            _context.SaveChanges(); // Guarda as mudanças para gerar o ID
+
+            // Atualiza o IdInterno com formato
+            var currentYear = DateTime.Now.ToString("yy");
+            newProcesso.IdInterno = $"CM{currentYear}-{newProcesso.IdPro}";
+
+            // Guarda novamente para persistir o IdInterno atualizado
+            _context.Processo.Update(newProcesso);
             _context.SaveChanges();
 
+            // Redireciona para a ação Details passando o ID do novo processo
             return RedirectToAction(nameof(Details), new { id = newProcesso.IdPro });
         }
+
 
         //Associa médicos ao processo
         [HttpPost]
@@ -79,8 +102,8 @@ namespace ClinicaMed.Controllers
             {
                 ViewData["ErrorMessage"] = "Este médico já está associado ao processo.";
                 var processo = await _context.Processo
-                .Include(p => p.Examinando)
-                .Include(p => p.Requisitante)
+                .Include(p => p.Examinandos)
+                .Include(p => p.Requisitantes)
                 .Include(p => p.ListaProceColab)
                     .ThenInclude(pc => pc.Colaborador)
                 .FirstOrDefaultAsync(m => m.IdPro == processoId);
@@ -112,5 +135,48 @@ namespace ClinicaMed.Controllers
 
             return RedirectToAction(nameof(Details), new { id = processoId });
         }
+
+        // Terminar um processo
+        [HttpPost]
+        public async Task<IActionResult> Terminate(int id)
+        {
+            var processo = await _context.Processo.FindAsync(id);
+            if (processo == null)
+            {
+                return NotFound();
+            }
+
+            // Muda o estado para 0 (terminado)
+            processo.Estado = 0;
+
+            processo.DataTermino = DateOnly.FromDateTime(DateTime.Now);
+
+            _context.Processo.Update(processo);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = processo.IdPro });
+        }
+
+        // Re-ativar um processo
+        [HttpPost]
+        public async Task<IActionResult> Reactivate(int id)
+        {
+            var processo = await _context.Processo.FindAsync(id);
+            if (processo == null)
+            {
+                return NotFound();
+            }
+
+            // Muda o estado para 1 (reativado)
+            processo.Estado = 1;
+
+            processo.DataTermino = null;
+
+            _context.Processo.Update(processo);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = processo.IdPro });
+        }
+
     }
 }

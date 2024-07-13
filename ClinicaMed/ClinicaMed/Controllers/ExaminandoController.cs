@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,9 +6,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClinicaMed.Data;
 using ClinicaMed.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicaMed.Controllers
 {
+    [Authorize]
     public class ExaminandoController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -47,39 +48,24 @@ namespace ClinicaMed.Controllers
         // GET: Examinando/Create
         public IActionResult Create(int? processoId)
         {
-            ViewBag.processoId = processoId;
-
-           var model = new Examinando();
-           return View(model);
+            ViewBag.ProcessoId = processoId;
+            return View(new Examinando());
         }
 
         // POST: Examinando/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdExa,Nome,Apelido,Telemovel,Email,Sexo,Antecedentes,DataNascimento,Profissao,Pais,Morada,CodigoPostal,Localidade,Nacionalidade,NumUtente,CartaoCidadao,ValidadeCC,Nif,Seguradora,NumeroSeguro,FiliacaoMae,FiliacaoPai")] Examinando examinando, int? processoId)
         {
-
             if (ModelState.IsValid)
             {
+                examinando.ProcessoId = (int)processoId;
+
                 _context.Add(examinando);
                 await _context.SaveChangesAsync();
 
-                if (processoId.HasValue)
-                {
-                    var processo = await _context.Processo.FindAsync(processoId.Value);
-                    if (processo != null)
-                    {
-                        processo.ExaminandoIdExa = examinando.IdExa;
-                        _context.Update(processo);
-                        await _context.SaveChangesAsync();
-                        // Caso exista processo, retorna para os detalhes do mesmo 
-                        return RedirectToAction("Details", "Processo", new { id = processoId.Value });
-                    }
-                }
-                // Caso nao exista processo, mas foi criado com sucesso o examinando, volta para o index
-                return RedirectToAction(nameof(Index));
+                // Redireciona para os detalhes do processo
+                return RedirectToAction("Details", "Processo", new { id = processoId });
             }
             return View(examinando);
         }
@@ -101,11 +87,9 @@ namespace ClinicaMed.Controllers
         }
 
         // POST: Examinando/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdExa,Nome,Apelido,Telemovel,Email,Sexo,Antecedentes,DataNascimento,Profissao,Pais,Morada,CodigoPostal,Localidade,Nacionalidade,NumUtente,CartaoCidadao,ValidadeCC,Nif,Seguradora,NumeroSeguro,FiliacaoMae,FiliacaoPai")] Examinando examinando)
+        public async Task<IActionResult> Edit(int id, [Bind("IdExa,Nome,Apelido,Telemovel,Email,Sexo,Antecedentes,DataNascimento,Profissao,Pais,Morada,CodigoPostal,Localidade,Nacionalidade,NumUtente,CartaoCidadao,ValidadeCC,Nif,Seguradora,NumeroSeguro,FiliacaoMae,FiliacaoPai")] Examinando examinando, int? processoId)
         {
             if (id != examinando.IdExa)
             {
@@ -116,6 +100,8 @@ namespace ClinicaMed.Controllers
             {
                 try
                 {
+                    examinando.ProcessoId = (int)processoId;
+
                     _context.Update(examinando);
                     await _context.SaveChangesAsync();
                 }
@@ -130,7 +116,7 @@ namespace ClinicaMed.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Processo", new { id = processoId });
             }
             return View(examinando);
         }
@@ -171,37 +157,6 @@ namespace ClinicaMed.Controllers
         private bool ExaminandoExists(int id)
         {
             return _context.Examinando.Any(e => e.IdExa == id);
-        }
-
-
-        [HttpGet]
-        public async Task<IActionResult> AssociarProc(int id, int processoId)
-        {
-            //Buscar o processo recebido por asp-route-id de forma asincrona onde o processo corresponda ao passado no mesmo
-            var processo = await _context.Processo.Include(p => p.Examinando).FirstOrDefaultAsync(p => p.IdPro == processoId);
-            if (processo == null) 
-            {
-                return NotFound();
-            }
-
-            //guarda o id do examinando no processo associado
-            processo.ExaminandoIdExa = id;
-            _context.Update(processo);
-            await _context.SaveChangesAsync();
-
-
-            //BUscar o examinando pelo id fornecido
-            var examinando = await _context.Examinando.FirstOrDefaultAsync(e => e.IdExa == id);
-            if(examinando == null)
-            {
-                return NotFound();
-            }
-
-            //guarda o processo na lista de processos do examinando
-            examinando.ListaProcesso.Add(processo);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Details","Processo", new {id = processoId});
         }
     }
 }

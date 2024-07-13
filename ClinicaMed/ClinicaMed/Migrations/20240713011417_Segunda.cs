@@ -5,7 +5,7 @@
 namespace ClinicaMed.Migrations
 {
     /// <inheritdoc />
-    public partial class MinorChanges : Migration
+    public partial class Segunda : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

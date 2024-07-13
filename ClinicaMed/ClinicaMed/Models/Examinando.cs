@@ -7,7 +7,6 @@ namespace ClinicaMed.Models
     {
         public Examinando()
         {
-            ListaProcesso = new HashSet<Processo>();
         }
 
         /// <summary>
@@ -173,8 +172,7 @@ namespace ClinicaMed.Models
         [Display(Name = "Filiação Pai")]
         public string FiliacaoPai { get; set; }
 
-        // Lista referente à relação 1-N entre a tabela Examinando com a tabela Processos 
-        public ICollection<Processo> ListaProcesso { get; set; }
-
+        public int ProcessoId { get; set; }
+        public Processo? Processo { get; set; }
     }
 }
