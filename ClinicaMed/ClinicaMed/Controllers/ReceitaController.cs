@@ -152,60 +152,31 @@ namespace ClinicaMed.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ReceitaExists(receita.IdRec))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return NotFound();
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id = receita.IdRec });
             }
             ViewData["ColaboradorFK"] = new SelectList(_context.Colaborador, "IdCol", "Apelido", receita.ColaboradorFK);
             ViewData["ProcessoFK"] = new SelectList(_context.Processo, "IdPro", "IdPro", receita.ProcessoFK);
             return View(receita);
         }
 
-        // GET: Receita/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // POST: Receita/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var receita = await _context.Receita
-                .Include(r => r.Colaborador)
-                .Include(r => r.Processo)
-                .FirstOrDefaultAsync(m => m.IdRec == id);
+            var receita = await _context.Receita.FindAsync(id);
             if (receita == null)
             {
                 return NotFound();
             }
 
-            return View(receita);
-        }
-
-        // POST: Receita/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var receita = await _context.Receita.FindAsync(id);
-            if (receita != null)
-            {
-                _context.Receita.Remove(receita);
-            }
-
+            _context.Receita.Remove(receita);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("Details", "Processo", new { id = receita.ProcessoFK }); // Redireciona para os detalhes do processo após a exclusão
         }
 
-        private bool ReceitaExists(int id)
-        {
-            return _context.Receita.Any(e => e.IdRec == id);
-        }
     }
 }

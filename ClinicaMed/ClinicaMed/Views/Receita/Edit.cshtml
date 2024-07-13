@@ -1,59 +1,60 @@
 ﻿@model ClinicaMed.Models.Receita
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Receita";
 }
 
-<h1>Edit</h1>
+<div class="container mt-5">
+    <h1 class="text-center">@ViewData["Title"]</h1>
+    <h4 class="text-center">Receita</h4>
+    <hr />
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="IdRec" />
 
-<h4>Receita</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdRec" />
-            <div class="form-group">
-                <label asp-for="NumReceita" class="control-label"></label>
-                <input asp-for="NumReceita" class="form-control" />
-                <span asp-validation-for="NumReceita" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Notas" class="control-label"></label>
-                <input asp-for="Notas" class="form-control" />
-                <span asp-validation-for="Notas" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DataReceita" class="control-label"></label>
-                <input asp-for="DataReceita" class="form-control" />
-                <span asp-validation-for="DataReceita" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProcessoFK" class="control-label"></label>
-                <select asp-for="ProcessoFK" class="form-control" asp-items="ViewBag.ProcessoFK"></select>
-                <span asp-validation-for="ProcessoFK" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ColaboradorFK" class="control-label"></label>
-                <select asp-for="ColaboradorFK" class="form-control" asp-items="ViewBag.ColaboradorFK"></select>
-                <span asp-validation-for="ColaboradorFK" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+                <div class="form-group">
+                    <label asp-for="NumReceita" class="control-label"></label>
+                    <input asp-for="NumReceita" class="form-control" />
+                    <span asp-validation-for="NumReceita" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Notas" class="control-label"></label>
+                    <textarea asp-for="Notas" class="form-control" placeholder="Notas adicionais" rows="3"></textarea>
+                    <span asp-validation-for="Notas" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="DataReceita" class="control-label"></label>
+                    <input asp-for="DataReceita" class="form-control" type="date" />
+                    <span asp-validation-for="DataReceita" class="text-danger"></span>
+                </div>
+
+                <div class="form-group" hidden>
+                    <label asp-for="ProcessoFK" class="control-label"></label>
+                    <select asp-for="ProcessoFK" class="form-control" asp-items="ViewBag.ProcessoFK"></select>
+                    <span asp-validation-for="ProcessoFK" class="text-danger"></span>
+                </div>
+
+                <div class="form-group" hidden>
+                    <label asp-for="ColaboradorFK" class="control-label"></label>
+                    <select asp-for="ColaboradorFK" class="form-control" asp-items="ViewBag.ColaboradorFK"></select>
+                    <span asp-validation-for="ColaboradorFK" class="text-danger"></span>
+                </div>
+
+                <div class="form-group text-center mt-4">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <a asp-controller="Receita" asp-action="Details" asp-route-id="@Model.IdRec" class="btn btn-secondary">Voltar</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -1,54 +1,53 @@
 ﻿@model ClinicaMed.Models.Receita
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes da Receita";
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>Receita</h4>
+<div class="container mt-5">
+    <h1 class="text-center">@ViewData["Title"]</h1>
+    <h4 class="text-center">Receita</h4>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NumReceita)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NumReceita)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Notas)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Notas)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DataReceita)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DataReceita)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Estado)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Estado)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Processo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Processo.IdPro)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Colaborador)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Colaborador.Apelido)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdRec">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    Número
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.NumReceita)
+                </dd>
+
+                <dt class="col-sm-4">
+                    Notas
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Notas)
+                </dd>
+
+                <dt class="col-sm-4">
+                    Data Emissão
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.DataReceita)
+                </dd>
+
+                <dt class="col-sm-4">
+                    Médico
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Colaborador.NomeApresentacao)
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-action="Edit" asp-route-id="@Model?.IdRec" class="btn btn-primary">Editar</a>
+        <a asp-controller="Processo" asp-action="Details" asp-route-id="@Model.ProcessoFK" class="btn btn-secondary">Voltar</a>
+
+        <form asp-action="Delete" asp-route-id="@Model.IdRec" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja apagar esta receita?');">Apagar</button>
+        </form>
+    </div>
 </div>

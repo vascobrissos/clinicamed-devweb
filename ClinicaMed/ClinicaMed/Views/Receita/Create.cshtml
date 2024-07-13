@@ -2,53 +2,64 @@
 
 @{
     ViewData["Title"] = "Criar Receita";
-
     int? processoId = ViewData["ProcessoId"] as int?;
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="container mt-5">
+    <h1 class="text-center">@ViewData["Title"]</h1>
+    <h4 class="text-center">Nova Receita</h4>
+    <hr />
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-<h4>Receita</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="NumReceita" class="control-label"></label>
-                <input asp-for="NumReceita" class="form-control" />
-                <span asp-validation-for="NumReceita" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Notas" class="control-label"></label>
-                <input asp-for="Notas" class="form-control" />
-                <span asp-validation-for="Notas" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DataReceita" class="control-label"></label>
-                <input asp-for="DataReceita" class="form-control" type="date" />
-                <span asp-validation-for="DataReceita" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
+                <div class="form-group">
+                    <label asp-for="NumReceita" class="control-label"></label>
+                    <input asp-for="NumReceita" class="form-control" placeholder="Número da Receita" />
+                    <span asp-validation-for="NumReceita" class="text-danger"></span>
+                </div>
 
-            <div class="form-group">
-                <label class="control-label">Selecione um Médico</label>
-                <select name="colaboradorId" class="form-control" required>
-                    @Html.Raw(ViewData["MedicosOptions"])
-                </select>
-            </div>
+                <div class="form-group">
+                    <label asp-for="Notas" class="control-label"></label>
+                    <textarea asp-for="Notas" class="form-control" placeholder="Notas adicionais" rows="3"></textarea>
+                    <span asp-validation-for="Notas" class="text-danger"></span>
+                </div>
 
-            <input type="hidden" asp-for="ProcessoFK" value="ViewBag.ProcessoId" />
-            <!--Este hidden inpits servem para poder passar facilmente para o controller os ids que pretendo para validar o Model-->
-            <input type="hidden" name="processoId" value="@processoId" />
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">Criar</button>
-                <a asp-action="Details" asp-controller="Processo" asp-route-id="@ViewBag.ProcessoId" class="btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
+                <div class="form-group">
+                    <label asp-for="DataReceita" class="control-label"></label>
+                    <input asp-for="DataReceita" class="form-control" type="date" />
+                    <span asp-validation-for="DataReceita" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Estado" class="control-label"></label>
+                    <input asp-for="Estado" class="form-control" placeholder="Estado da Receita" />
+                    <span asp-validation-for="Estado" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Selecione um Médico</label>
+                    <select name="colaboradorId" class="form-control" required>
+                        @Html.Raw(ViewData["MedicosOptions"])
+                    </select>
+                </div>
+
+                <input type="hidden" asp-for="ProcessoFK" value="@processoId" />
+
+                <br />
+
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary">Criar</button>
+                    <a asp-action="Details" asp-controller="Processo" asp-route-id="@processoId" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
