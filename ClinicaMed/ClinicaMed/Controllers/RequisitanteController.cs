@@ -9,46 +9,47 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicaMed.Controllers
 {
-    [Authorize]
+    [Authorize] // Garante que apenas utilizadores autenticados acedem a este controlador
     public class RequisitanteController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context; // Contexto da base de dados
 
         public RequisitanteController(ApplicationDbContext context)
         {
-            _context = context;
+            _context = context; // Inicializa o contexto
         }
 
         // GET: Requisitante
         public async Task<IActionResult> Index(int? processoId)
         {
-            ViewData["ProcessoId"] = processoId;
-            return View(await _context.Requisitante.ToListAsync());
+            ViewData["ProcessoId"] = processoId; // Passa o ID do processo para a view
+            return View(await _context.Requisitante.ToListAsync()); // Retorna a lista de requisitantes à view
         }
 
         // GET: Requisitante/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404
             }
 
+            // Busca o requisitante pelo ID
             var requisitante = await _context.Requisitante
                 .FirstOrDefaultAsync(m => m.IdReq == id);
-            if (requisitante == null)
+            if (requisitante == null) // Verifica se o requisitante existe
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404
             }
 
-            return View(requisitante);
+            return View(requisitante); // Retorna a view com os detalhes do requisitante
         }
 
         // GET: Requisitante/Create
         public IActionResult Create(int? processoId)
         {
-            ViewBag.ProcessoId = processoId;
-            return View(new Requisitante());
+            ViewBag.ProcessoId = processoId; // Passa o ID do processo para a view
+            return View(new Requisitante()); // Retorna a view de criação de requisitante
         }
 
         // POST: Requisitante/Create
@@ -56,33 +57,33 @@ namespace ClinicaMed.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdReq,Nome,Apelido,Telemovel,Email,Sexo,Pais,Morada,CodigoPostal,Localidade,Nacionalidade,Nif")] Requisitante requisitante, int? processoId)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // Verifica se o modelo é válido
             {
-                requisitante.ProcessoId = processoId.HasValue ? processoId.Value : default;
+                requisitante.ProcessoId = processoId.HasValue ? processoId.Value : default; // Associa o ID do processo
 
-                _context.Add(requisitante);
-                await _context.SaveChangesAsync();
+                _context.Add(requisitante); // Adiciona o requisitante ao contexto
+                await _context.SaveChangesAsync(); // Salva as alterações
 
                 // Redireciona para os detalhes do processo
                 return RedirectToAction("Details", "Processo", new { id = processoId });
             }
-            return View(requisitante);
+            return View(requisitante); // Retorna a view com o requisitante não válido
         }
 
         // GET: Requisitante/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404
             }
 
-            var requisitante = await _context.Requisitante.FindAsync(id);
-            if (requisitante == null)
+            var requisitante = await _context.Requisitante.FindAsync(id); // Busca o requisitante pelo ID
+            if (requisitante == null) // Verifica se o requisitante existe
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404
             }
-            return View(requisitante);
+            return View(requisitante); // Retorna a view de edição do requisitante
         }
 
         // POST: Requisitante/Edit/5
@@ -90,52 +91,52 @@ namespace ClinicaMed.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdReq,Nome,Apelido,Telemovel,Email,Sexo,Pais,Morada,CodigoPostal,Localidade,Nacionalidade,Nif")] Requisitante requisitante, int? processoId)
         {
-            if (id != requisitante.IdReq)
+            if (id != requisitante.IdReq) // Verifica se o ID da receita corresponde
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404 se não corresponder
             }
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // Verifica se o modelo é válido
             {
                 try
                 {
-                    requisitante.ProcessoId = (int)processoId;
+                    requisitante.ProcessoId = (int)processoId; // Associa o ID do processo
 
-                    _context.Update(requisitante);
-                    await _context.SaveChangesAsync();
+                    _context.Update(requisitante); // Atualiza o requisitante no contexto
+                    await _context.SaveChangesAsync(); // Salva as alterações
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException) // Captura exceção de concorrência
                 {
-                    if (!RequisitanteExists(requisitante.IdReq))
+                    if (!RequisitanteExists(requisitante.IdReq)) // Verifica se o requisitante ainda existe
                     {
-                        return NotFound();
+                        return NotFound(); // Retorna erro 404 se não existir
                     }
                     else
                     {
-                        throw;
+                        throw; // Lança exceção se ocorrer outro erro
                     }
                 }
-                return RedirectToAction("Details", "Processo", new { id = processoId });
+                return RedirectToAction("Details", "Processo", new { id = processoId }); // Redireciona para os detalhes do processo
             }
-            return View(requisitante);
+            return View(requisitante); // Retorna a view com o requisitante não válido
         }
 
         // GET: Requisitante/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404
             }
 
             var requisitante = await _context.Requisitante
-                .FirstOrDefaultAsync(m => m.IdReq == id);
-            if (requisitante == null)
+                .FirstOrDefaultAsync(m => m.IdReq == id); // Busca o requisitante pelo ID
+            if (requisitante == null) // Verifica se o requisitante existe
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404
             }
 
-            return View(requisitante);
+            return View(requisitante); // Retorna a view de confirmação da eliminação do requisitante
         }
 
         // POST: Requisitante/Delete/5
@@ -143,19 +144,19 @@ namespace ClinicaMed.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var requisitante = await _context.Requisitante.FindAsync(id);
-            if (requisitante != null)
+            var requisitante = await _context.Requisitante.FindAsync(id); // Busca o requisitante pelo ID
+            if (requisitante != null) // Verifica se o requisitante existe
             {
-                _context.Requisitante.Remove(requisitante);
+                _context.Requisitante.Remove(requisitante); // Remove o requisitante do contexto
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            await _context.SaveChangesAsync(); // Salva as alterações
+            return RedirectToAction(nameof(Index)); // Redireciona para a lista de requisitantes
         }
 
         private bool RequisitanteExists(int id)
         {
-            return _context.Requisitante.Any(e => e.IdReq == id);
+            return _context.Requisitante.Any(e => e.IdReq == id); // Verifica se o requisitante existe
         }
     }
 }

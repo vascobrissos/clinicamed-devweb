@@ -9,47 +9,49 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicaMed.Controllers
 {
-    [Authorize]
+    [Authorize] // Garante que apenas utilizadores autenticados podem aceder a este controlador
     public class ReceitaController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context; // Contexto da base de dados
 
         public ReceitaController(ApplicationDbContext context)
         {
-            _context = context;
+            _context = context; // Inicializa o contexto
         }
 
         // GET: Receita
         public async Task<IActionResult> Index()
         {
+            // Carrega todas as receitas incluindo colaboradores e processos associados
             var applicationDbContext = _context.Receita.Include(r => r.Colaborador).Include(r => r.Processo);
-            return View(await applicationDbContext.ToListAsync());
+            return View(await applicationDbContext.ToListAsync()); // Retorna a lista de receitas à view
         }
 
         // GET: Receita/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404
             }
 
+            // Busca a receita pelo ID, incluindo colaborador e processo
             var receita = await _context.Receita
                 .Include(r => r.Colaborador)
                 .Include(r => r.Processo)
                 .FirstOrDefaultAsync(m => m.IdRec == id);
-            if (receita == null)
+            if (receita == null) // Verifica se a receita existe
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404
             }
 
-            return View(receita);
+            return View(receita); // Retorna a view com os detalhes da receita
         }
 
         // GET: Receita/Create
         public IActionResult Create(int processoId)
         {
-            // Buscar médicos associados ao processo
+            // Busca médicos associados ao processo
             var medicos = _context.ProcessoColaborador
                 .Where(pc => pc.ProcessoFK == processoId)
                 .Select(pc => pc.Colaborador)
@@ -60,15 +62,15 @@ namespace ClinicaMed.Controllers
                     NomeCompleto = c.Nome + " " + c.Apelido
                 }).ToList();
 
+            // Cria opções de médicos para seleção
             var options = string.Join("", medicos.Select(m => $"<option value=\"{m.IdCol}\">{m.NomeCompleto}</option>"));
 
-            ViewData["MedicosOptions"] = options;
-            ViewData["ProcessoId"] = processoId;
+            ViewData["MedicosOptions"] = options; // Passa opções de médicos para a view
+            ViewData["ProcessoId"] = processoId; // Passa ID do processo
 
-            var model = new Receita();
-            return View(model);
+            var model = new Receita(); // Cria uma nova instância de Receita
+            return View(model); // Retorna a view de criação de receita
         }
-
 
         // POST: Receita/Create
         [HttpPost]
@@ -79,29 +81,28 @@ namespace ClinicaMed.Controllers
             var processo = await _context.Processo.FindAsync(processoId);
             if (processo == null)
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404 se o processo não existir
             }
 
             // Carregar o colaborador associado ao colaboradorId
             var colaborador = await _context.Colaborador.FindAsync(colaboradorId);
             if (colaborador == null)
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404 se o colaborador não existir
             }
 
-            // Associar o processo e o colaborador ao objeto Receita
+            // Associar o processo e o colaborador à nova receita
             receita.Processo = processo;
-            receita.Colaborador = colaborador; 
+            receita.Colaborador = colaborador;
 
-            // Verificar a validade do ModelState agora que as propriedades estão preenchidas corretamente
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // Verifica a validade do modelo
             {
-                _context.Add(receita);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Details", "Processo", new { id = receita.ProcessoFK });
+                _context.Add(receita); // Adiciona a nova receita ao contexto
+                await _context.SaveChangesAsync(); // Salva as alterações
+                return RedirectToAction("Details", "Processo", new { id = receita.ProcessoFK }); // Redireciona para os detalhes do processo
             }
 
-            // Se o ModelState não for válido, carregar a lista de colaboradores associados ao processo
+            // Se o modelo não for válido, carrega a lista de colaboradores associados ao processo
             var medicosAssociados = _context.Processo
                 .Include(p => p.ListaProceColab)
                 .ThenInclude(pc => pc.Colaborador)
@@ -112,7 +113,7 @@ namespace ClinicaMed.Controllers
             ViewBag.ColaboradorFK = new SelectList(medicosAssociados.Select(c => new { c.IdCol, NomeCompleto = c.Nome + " " + c.Apelido }), "IdCol", "NomeCompleto", colaboradorId);
             ViewData["ProcessoId"] = processoId;
 
-            return View(receita);
+            return View(receita); // Retorna a view com a receita não válida
         }
 
         // GET: Receita/Edit/5
@@ -120,17 +121,18 @@ namespace ClinicaMed.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404
             }
 
             var receita = await _context.Receita.FindAsync(id);
             if (receita == null)
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404 se a receita não existir
             }
+            // Prepara listas de seleção para a edição
             ViewData["ColaboradorFK"] = new SelectList(_context.Colaborador, "IdCol", "Apelido", receita.ColaboradorFK);
             ViewData["ProcessoFK"] = new SelectList(_context.Processo, "IdPro", "IdPro", receita.ProcessoFK);
-            return View(receita);
+            return View(receita); // Retorna a view de edição da receita
         }
 
         // POST: Receita/Edit/5
@@ -138,27 +140,28 @@ namespace ClinicaMed.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdRec,NumReceita,Notas,DataReceita,Estado,ProcessoFK,ColaboradorFK")] Receita receita)
         {
-            if (id != receita.IdRec)
+            if (id != receita.IdRec) // Verifica se o ID da receita corresponde
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404 se não corresponder
             }
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // Verifica se o modelo é válido
             {
                 try
                 {
-                    _context.Update(receita);
-                    await _context.SaveChangesAsync();
+                    _context.Update(receita); // Atualiza a receita no contexto
+                    await _context.SaveChangesAsync(); // Salva as alterações
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException) // Captura exceção de concorrência
                 {
-                    return NotFound();
+                    return NotFound(); // Retorna erro 404 se a receita não existir
                 }
-                return RedirectToAction(nameof(Details), new { id = receita.IdRec });
+                return RedirectToAction(nameof(Details), new { id = receita.IdRec }); // Redireciona para os detalhes da receita
             }
+            // Se o modelo não for válido, prepara listas de seleção
             ViewData["ColaboradorFK"] = new SelectList(_context.Colaborador, "IdCol", "Apelido", receita.ColaboradorFK);
             ViewData["ProcessoFK"] = new SelectList(_context.Processo, "IdPro", "IdPro", receita.ProcessoFK);
-            return View(receita);
+            return View(receita); // Retorna a view com a receita não válida
         }
 
         // POST: Receita/Delete/5
@@ -169,14 +172,13 @@ namespace ClinicaMed.Controllers
             var receita = await _context.Receita.FindAsync(id);
             if (receita == null)
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404 se a receita não existir
             }
 
-            _context.Receita.Remove(receita);
-            await _context.SaveChangesAsync();
+            _context.Receita.Remove(receita); // Remove a receita do contexto
+            await _context.SaveChangesAsync(); // Salva as alterações
 
             return RedirectToAction("Details", "Processo", new { id = receita.ProcessoFK }); // Redireciona para os detalhes do processo após a exclusão
         }
-
     }
 }

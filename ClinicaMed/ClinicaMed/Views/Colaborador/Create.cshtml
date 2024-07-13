@@ -12,6 +12,7 @@
             <form asp-action="Create" method="post" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-6">
+                        <!-- Seletor de função -->
                         <div class="mb-3">
                             <label for="Role" class="form-label">Função</label>
                             <select name="Role" id="Role" class="form-select" required>
@@ -21,35 +22,41 @@
                             </select>
                         </div>
 
+                        <!-- Nome de apresentação -->
                         <div class="mb-3">
                             <label asp-for="NomeApresentacao" class="form-label">Nome Apresentação</label>
                             <input asp-for="NomeApresentacao" class="form-control" />
                             <span asp-validation-for="NomeApresentacao" class="text-danger"></span>
                         </div>
 
+                        <!-- Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
                             <input class="form-control" type="email" id="email" name="EmailCol" size="30" required />
                         </div>
 
+                        <!-- Nome -->
                         <div class="mb-3">
                             <label asp-for="Nome" class="form-label"></label>
                             <input asp-for="Nome" class="form-control" />
                             <span asp-validation-for="Nome" class="text-danger"></span>
                         </div>
 
+                        <!-- Apelido -->
                         <div class="mb-3">
                             <label asp-for="Apelido" class="form-label"></label>
                             <input asp-for="Apelido" class="form-control" />
                             <span asp-validation-for="Apelido" class="text-danger"></span>
                         </div>
 
+                        <!-- Telemóvel -->
                         <div class="mb-3">
                             <label asp-for="Telemovel" class="form-label"></label>
                             <input asp-for="Telemovel" class="form-control" />
                             <span asp-validation-for="Telemovel" class="text-danger"></span>
                         </div>
 
+                        <!-- Sexo -->
                         <div class="mb-3">
                             <label asp-for="Sexo" class="form-label"></label>
                             <select asp-for="Sexo" class="form-select">
@@ -59,6 +66,7 @@
                             <span asp-validation-for="Sexo" class="text-danger"></span>
                         </div>
 
+                        <!-- Data de Nascimento -->
                         <div class="mb-3">
                             <label asp-for="DataNascimento" class="form-label">Data de Nascimento</label>
                             <input asp-for="DataNascimento" type="date" class="form-control" />
@@ -67,42 +75,49 @@
                     </div>
 
                     <div class="col-md-6">
+                        <!-- País -->
                         <div class="mb-3">
                             <label asp-for="Pais" class="form-label">País</label>
                             <input asp-for="Pais" class="form-control" />
                             <span asp-validation-for="Pais" class="text-danger"></span>
                         </div>
 
+                        <!-- Morada -->
                         <div class="mb-3">
                             <label asp-for="Morada" class="form-label"></label>
                             <input asp-for="Morada" class="form-control" />
                             <span asp-validation-for="Morada" class="text-danger"></span>
                         </div>
 
+                        <!-- Código Postal -->
                         <div class="mb-3">
                             <label asp-for="CodPostal" class="form-label">Código Postal</label>
                             <input asp-for="CodPostal" class="form-control" />
                             <span asp-validation-for="CodPostal" class="text-danger"></span>
                         </div>
 
+                        <!-- Localidade -->
                         <div class="mb-3">
                             <label asp-for="Localidade" class="form-label"></label>
                             <input asp-for="Localidade" class="form-control" />
                             <span asp-validation-for="Localidade" class="text-danger"></span>
                         </div>
 
+                        <!-- Nacionalidade -->
                         <div class="mb-3">
                             <label asp-for="Nacionalidade" class="form-label"></label>
                             <input asp-for="Nacionalidade" class="form-control" />
                             <span asp-validation-for="Nacionalidade" class="text-danger"></span>
                         </div>
 
+                        <!-- NIF -->
                         <div class="mb-3">
                             <label asp-for="Nif" class="form-label">NIF</label>
                             <input asp-for="Nif" class="form-control" />
                             <span asp-validation-for="Nif" class="text-danger"></span>
                         </div>
 
+                        <!-- Estado Civil -->
                         <div class="mb-3">
                             <label asp-for="EstadoCivil" class="form-label">Estado Civil</label>
                             <select asp-for="EstadoCivil" class="form-select">
@@ -114,6 +129,7 @@
                             <span asp-validation-for="EstadoCivil" class="text-danger"></span>
                         </div>
 
+                        <!-- Número de Ordem -->
                         <div class="mb-3">
                             <label asp-for="NumOrdem" class="form-label">Número Ordem</label>
                             <input asp-for="NumOrdem" class="form-control" />

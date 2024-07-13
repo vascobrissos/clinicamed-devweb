@@ -11,14 +11,14 @@ using System.Security.Claims;
 
 namespace ClinicaMed.Controllers
 {
-    [Authorize]
+    [Authorize] // Garante que apenas utilizadores autenticados podem aceder a este controlador
     public class ProcessoController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context; // Contexto da base de dados
 
         public ProcessoController(ApplicationDbContext context)
         {
-            _context = context;
+            _context = context; // Inicializa o contexto
         }
 
         // Listar todos os processos
@@ -51,17 +51,15 @@ namespace ClinicaMed.Controllers
             // Ordenar a lista de processos pelo IdInterno
             var orderedProcessos = processos.OrderBy(p => p.IdInterno).ToList();
 
-            return View(orderedProcessos);
+            return View(orderedProcessos); // Retorna a view com a lista ordenada de processos
         }
-
-
 
         // Visualizar detalhes de um processo específico
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404
             }
 
             var processo = await _context.Processo
@@ -71,27 +69,27 @@ namespace ClinicaMed.Controllers
                     .ThenInclude(pc => pc.Colaborador)
                 .Include(p => p.ListaReceita)
                 .Include(p => p.ListaConsulta)
-                .FirstOrDefaultAsync(p => p.IdPro == id);
+                .FirstOrDefaultAsync(p => p.IdPro == id); // Procura o processo pelo ID
 
-            if (processo == null)
+            if (processo == null) // Verifica se o processo existe
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404
             }
 
             var medicos = await _context.Colaborador
-                .Where(c => _context.UserRoles.Any(nur => nur.UserId == c.UserId && nur.RoleId == "med"))
+                .Where(c => _context.UserRoles.Any(nur => nur.UserId == c.UserId && nur.RoleId == "med")) // Filtra apenas médicos
                 .Select(c => new
                 {
                     c.IdCol,
-                    NomeCompleto = c.Nome + " " + c.Apelido
+                    NomeCompleto = c.Nome + " " + c.Apelido // Cria um nome completo
                 }).ToListAsync();
 
-            ViewData["Medicos"] = new SelectList(medicos, "IdCol", "NomeCompleto");
+            ViewData["Medicos"] = new SelectList(medicos, "IdCol", "NomeCompleto"); // Passa a lista de médicos para a view
 
-            return View(processo);
+            return View(processo); // Retorna a view com os detalhes do processo
         }
 
-        // Criar um processo
+        // Criar um novo processo
         public IActionResult Create()
         {
             var newProcesso = new Processo
@@ -101,22 +99,23 @@ namespace ClinicaMed.Controllers
                 Estado = 1 // Estado inicial
             };
 
-            _context.Processo.Add(newProcesso);
-            _context.SaveChanges();
+            _context.Processo.Add(newProcesso); // Adiciona o novo processo ao contexto
+            _context.SaveChanges(); // Salva as alterações
 
             var currentYear = DateTime.Now.ToString("yy");
-            newProcesso.IdInterno = $"CM{currentYear}-{newProcesso.IdPro}";
+            newProcesso.IdInterno = $"CM{currentYear}-{newProcesso.IdPro}"; // Gera um ID interno
 
-            _context.Processo.Update(newProcesso);
-            _context.SaveChanges();
+            _context.Processo.Update(newProcesso); // Atualiza o processo com o ID interno
+            _context.SaveChanges(); // Salva as alterações
 
-            return RedirectToAction(nameof(Details), new { id = newProcesso.IdPro });
+            return RedirectToAction(nameof(Details), new { id = newProcesso.IdPro }); // Redireciona para os detalhes do novo processo
         }
 
         // Associar médicos ao processo
         [HttpPost]
         public async Task<IActionResult> AssociateMedico(int processoId, int medicoId)
         {
+            // Verifica se o médico já está associado ao processo
             bool medicoJaAssociado = _context.ProcessoColaborador.Any(pc => pc.ProcessoFK == processoId && pc.ColaboradorFK == medicoId);
 
             if (medicoJaAssociado)
@@ -140,7 +139,7 @@ namespace ClinicaMed.Controllers
 
                 ViewData["Medicos"] = new SelectList(medicos, "IdCol", "NomeCompleto");
 
-                return View("Details", processo);
+                return View("Details", processo); // Retorna a view de detalhes com mensagem de erro
             }
 
             var processoColaborador = new ProcessoColaborador
@@ -148,13 +147,13 @@ namespace ClinicaMed.Controllers
                 ProcessoFK = processoId,
                 ColaboradorFK = medicoId,
                 DataAtribuicao = DateTime.Now,
-                DataRemocao = DateTime.MaxValue
+                DataRemocao = DateTime.MaxValue // Data de remoção definida para um valor máximo
             };
 
-            _context.ProcessoColaborador.Add(processoColaborador);
-            await _context.SaveChangesAsync();
+            _context.ProcessoColaborador.Add(processoColaborador); // Adiciona a associação ao contexto
+            await _context.SaveChangesAsync(); // Salva as alterações
 
-            return RedirectToAction(nameof(Details), new { id = processoId });
+            return RedirectToAction(nameof(Details), new { id = processoId }); // Redireciona para os detalhes do processo
         }
 
         // Remover médico associado ao processo
@@ -166,11 +165,11 @@ namespace ClinicaMed.Controllers
 
             if (processoColaborador != null)
             {
-                _context.ProcessoColaborador.Remove(processoColaborador);
-                await _context.SaveChangesAsync();
+                _context.ProcessoColaborador.Remove(processoColaborador); // Remove a associação do contexto
+                await _context.SaveChangesAsync(); // Salva as alterações
             }
 
-            return RedirectToAction(nameof(Details), new { id = processoId });
+            return RedirectToAction(nameof(Details), new { id = processoId }); // Redireciona para os detalhes do processo
         }
 
         // Terminar um processo
@@ -180,16 +179,16 @@ namespace ClinicaMed.Controllers
             var processo = await _context.Processo.FindAsync(id);
             if (processo == null)
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404 se não existir
             }
 
-            processo.Estado = 0;
-            processo.DataTermino = DateOnly.FromDateTime(DateTime.Now);
+            processo.Estado = 0; // Define o estado como terminado
+            processo.DataTermino = DateOnly.FromDateTime(DateTime.Now); // Define a data de término
 
-            _context.Processo.Update(processo);
-            await _context.SaveChangesAsync();
+            _context.Processo.Update(processo); // Atualiza o processo no contexto
+            await _context.SaveChangesAsync(); // Salva as alterações
 
-            return RedirectToAction(nameof(Details), new { id = processo.IdPro });
+            return RedirectToAction(nameof(Details), new { id = processo.IdPro }); // Redireciona para os detalhes do processo
         }
 
         // Re-ativar um processo
@@ -199,16 +198,16 @@ namespace ClinicaMed.Controllers
             var processo = await _context.Processo.FindAsync(id);
             if (processo == null)
             {
-                return NotFound();
+                return NotFound(); // Retorna erro 404 se não existir
             }
 
-            processo.Estado = 1;
-            processo.DataTermino = null;
+            processo.Estado = 1; // Define o estado como ativo
+            processo.DataTermino = null; // Limpa a data de término
 
-            _context.Processo.Update(processo);
-            await _context.SaveChangesAsync();
+            _context.Processo.Update(processo); // Atualiza o processo no contexto
+            await _context.SaveChangesAsync(); // Salva as alterações
 
-            return RedirectToAction(nameof(Details), new { id = processo.IdPro });
+            return RedirectToAction(nameof(Details), new { id = processo.IdPro }); // Redireciona para os detalhes do processo
         }
     }
 }

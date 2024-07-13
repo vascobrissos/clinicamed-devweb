@@ -15,39 +15,32 @@ namespace ClinicaMed.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            /* Esta instrução importa tudo o que está pre-definido
-             * na super classe
-             */
+            // Chama o método base para garantir que as configurações predefinidas sejam aplicadas
             base.OnModelCreating(builder);
 
-            /* Adição de dados à Base de Dados
-             * Esta forma é PERSISTENTE, pelo que apenas deve ser utilizada em 
-             * dados que perduram da fase de 'desenvolvimento' para a fase de 'produção'.
-             * Implica efetuar um 'Add-Migration'
-             * 
-             * Atribuir valores às ROLES
-             */
+            // Adiciona dados à base de dados
             builder.Entity<IdentityRole>().HasData(
                 new IdentityRole { Id = "adm", Name = "Administrador", NormalizedName = "ADMINISTRADOR" },
                 new IdentityRole { Id = "col", Name = "Administrativo", NormalizedName = "ADMINISTRATIVO" },
                 new IdentityRole { Id = "med", Name = "Medico", NormalizedName = "MEDICO" }
-                );
+            );
 
+            // Configurações das relações entre entidades
             builder.Entity<Examinando>()
-            .HasOne(e => e.Processo)
-            .WithMany(p => p.Examinandos)
-            .HasForeignKey(e => e.ProcessoId);
+                .HasOne(e => e.Processo) // Cada Examinando está associado a um Processo
+                .WithMany(p => p.Examinandos) // Um Processo pode ter muitos Examinandos
+                .HasForeignKey(e => e.ProcessoId); // Chave estrangeira
 
             builder.Entity<Requisitante>()
-            .HasOne(e => e.Processo)
-            .WithMany(p => p.Requisitantes)
-            .HasForeignKey(e => e.ProcessoId);
+                .HasOne(e => e.Processo) // Cada Requisitante está associado a um Processo
+                .WithMany(p => p.Requisitantes) // Um Processo pode ter muitos Requisitantes
+                .HasForeignKey(e => e.ProcessoId); // Chave estrangeira
 
             builder.Entity<Receita>()
-            .HasOne(r => r.Colaborador)
-            .WithMany()
-            .HasForeignKey(r => r.ColaboradorFK)
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(r => r.Colaborador) // Cada Receita está associada a um Colaborador
+                .WithMany() // Um Colaborador pode ter muitas Receitas
+                .HasForeignKey(r => r.ColaboradorFK) // Chave estrangeira
+                .OnDelete(DeleteBehavior.Restrict); // Comportamento em caso de eliminação
         }
 
         // definição das 'tabelas'
