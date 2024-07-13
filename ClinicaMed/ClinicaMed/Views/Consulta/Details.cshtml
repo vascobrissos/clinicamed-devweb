@@ -1,0 +1,73 @@
+﻿@model ClinicaMed.Models.Consulta
+
+@{
+    ViewData["Title"] = "Detalhes da Consulta";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center">@ViewData["Title"]</h1>
+    <h4 class="text-center">Consulta</h4>
+    <hr />
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    Data da Consulta
+                </dt>
+                <dd class="col-sm-8">
+                    @Model.DataConsulta.ToString("dd/MM/yyyy HH:mm")
+                </dd>
+
+                <dt class="col-sm-4">
+                    Observações
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Observacoes)
+                </dd>
+
+                <dt class="col-sm-4">
+                    Estado
+                </dt>
+                <dd class="col-sm-8">
+                    @(Model.Estado == 0 ? "Concluída" : "Ativa")
+                </dd>
+
+                <dt class="col-sm-4">
+                    Médico
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Colaborador.NomeApresentacao)
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-action="Edit" asp-route-id="@Model?.IdCon" class="btn btn-primary">Editar</a>
+        <a asp-controller="Processo" asp-action="Details" asp-route-id="@Model.ProcessoFK" class="btn btn-secondary">Voltar</a>
+
+        <form asp-action="Delete" asp-route-id="@Model.IdCon" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja apagar esta consulta?');">Apagar</button>
+        </form>
+
+        <!-- Botão para terminar a consulta -->
+        @if (Model.Estado == 1)
+        {
+            <form asp-action="TerminarConsulta" asp-route-id="@Model.IdCon" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-warning" onclick="return confirm('Tem certeza que deseja concluir esta consulta?');">Concluir Consulta</button>
+            </form>
+        }
+        else
+        {
+            <form asp-action="AtivarConsulta" asp-route-id="@Model.IdCon" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-success" onclick="return confirm('Tem certeza que deseja ativar esta consulta?');">Ativar Consulta</button>
+            </form>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

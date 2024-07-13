@@ -39,13 +39,11 @@
                         </div>
                         <div class="form-group">
                             <label asp-for="Sexo" class="control-label"></label>
-                            <input asp-for="Sexo" class="form-control" />
+                            <select asp-for="Sexo" class="form-select">
+                                <option value="0">Masculino</option>
+                                <option value="1">Feminino</option>
+                            </select>
                             <span asp-validation-for="Sexo" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="Antecedentes" class="control-label"></label>
-                            <input asp-for="Antecedentes" class="form-control" />
-                            <span asp-validation-for="Antecedentes" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="DataNascimento" class="control-label"></label>
@@ -105,7 +103,7 @@
                             <span asp-validation-for="ValidadeCC" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Nif" class="control-label"></label>
+                            <label asp-for="Nif" class="control-label">NIF</label>
                             <input asp-for="Nif" class="form-control" />
                             <span asp-validation-for="Nif" class="text-danger"></span>
                         </div>
@@ -130,6 +128,16 @@
                             <label asp-for="FiliacaoPai" class="control-label"></label>
                             <input asp-for="FiliacaoPai" class="form-control" />
                             <span asp-validation-for="FiliacaoPai" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label asp-for="Antecedentes" class="control-label"></label>
+                            <textarea asp-for="Antecedentes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Antecedentes" class="text-danger"></span>
                         </div>
                     </div>
                 </div>

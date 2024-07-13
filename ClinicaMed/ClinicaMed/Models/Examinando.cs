@@ -45,7 +45,7 @@ namespace ClinicaMed.Models
         /// </summary>
         [StringLength(100)]
         [Required(ErrorMessage = "O {0} é obrigatório!")]
-        [Display(Name = "Correio Eletrónico")]
+        [Display(Name = "Email")]
         public string Email { get; set; }
 
         /// <summary>

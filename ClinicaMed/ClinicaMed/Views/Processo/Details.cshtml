@@ -10,6 +10,7 @@
 <div class="container mt-4">
     <h4 class="mb-3">Informações do Processo</h4>
     <hr />
+
     <div class="row">
         <div class="col-md-6">
             <dl class="row">
@@ -29,132 +30,170 @@
                 <dd class="col-sm-7">@(Model.Estado == 0 ? "Terminado" : "Ativo")</dd>
             </dl>
 
-            <dt class="col-sm-5">Médicos associados:</dt>
-            <dd class="col-sm-7">
-                @if (Model.ListaProceColab != null && Model.ListaProceColab.Any())
+            <h5>Médicos associados</h5>
+            @if (Model.ListaProceColab != null && Model.ListaProceColab.Any())
+            {
+                foreach (var pc in Model.ListaProceColab)
                 {
-                    foreach (var pc in Model.ListaProceColab)
+                    var medico = pc.Colaborador;
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>@medico.Nome @medico.Apelido</span>
+                        <form asp-action="RemoveMedico" method="post" class="ml-2">
+                            <input type="hidden" name="processoId" value="@Model.IdPro" />
+                            <input type="hidden" name="medicoId" value="@medico.IdCol" />
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja desassociar este médico?');">Remover</button>
+                        </form>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-muted">Nenhum médico associado.</div>
+            }
+
+            <div class="mt-4">
+                @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+                {
+                    <h5>Associar Médico</h5>
+                    @if (ViewData["ErrorMessage"] != null)
                     {
-                        var medico = pc.Colaborador;
-                        <div>@medico.Nome @medico.Apelido</div>
+                        <div class="alert alert-danger">
+                            @ViewData["ErrorMessage"]
+                        </div>
+                    }
+                    <form asp-action="AssociateMedico" method="post" class="form-inline">
+                        <input type="hidden" name="processoId" value="@Model.IdPro" />
+                        <div class="form-group mr-2">
+                            <label class="control-label sr-only">Selecione um Médico</label>
+                            <select name="medicoId" asp-items="medicosSelectList" class="form-control"></select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Associar</button>
+                    </form>
+                }
+            </div>
+
+
+            <div class="mt-4">
+                @if (Model.Estado == 0)
+                {
+                    <form asp-action="Reactivate" method="post">
+                        <input type="hidden" name="id" value="@Model.IdPro" />
+                        <button type="submit" class="btn btn-success" onclick="return confirm('Tem certeza que deseja reativar este processo?');">Re-Ativar Processo</button>
+                    </form>
+                }
+                else if (Model.Estado == 1)
+                {
+                    <form asp-action="Terminate" method="post">
+                        <input type="hidden" name="id" value="@Model.IdPro" />
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja terminar este processo?');">Terminar Processo</button>
+                    </form>
+                }
+            </div>
+
+            <div class="mt-4">
+                <a asp-action="Index" class="btn btn-primary">Voltar à Lista</a>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h5>Requisitante</h5>
+            <div class="list-group">
+                @if (Model.Requisitantes != null && Model.Requisitantes.Any())
+                {
+                    foreach (var requisitante in Model.Requisitantes)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>@requisitante.Nome @requisitante.Apelido</strong><br />
+                                <span>Telemóvel: @requisitante.Telemovel</span><br />
+                                <span>Email: @requisitante.Email</span>
+                            </div>
+                            <a asp-action="Edit" asp-controller="Requisitante" asp-route-id="@requisitante.IdReq" class="btn btn-secondary btn-sm">Editar</a>
+                        </div>
                     }
                 }
                 else
                 {
-                    <div class="text-muted">Nenhum médico associado.</div>
+                    <div class="text-muted text-center">Nenhum requisitante associado.</div>
+                    <a asp-action="Create" asp-controller="Requisitante" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Requisitante</a>
                 }
-            </dd>
-        </div>
+            </div>
 
-        <div class="col-md-6">
-            <h5>Requisitantes:</h5>
-            @if (Model.Requisitantes != null && Model.Requisitantes.Any())
-            {
-                foreach (var requisitante in Model.Requisitantes)
+            <h5 class="mt-3">Examinando</h5>
+            <div class="list-group">
+                @if (Model.Examinandos != null && Model.Examinandos.Any())
                 {
-                    <div>@requisitante.Nome @requisitante.Apelido</div>
-                    <div>
-                        <a asp-action="Edit" asp-controller="Requisitante" asp-route-id="@requisitante.IdReq" class="btn btn-secondary btn-sm">Editar</a>
-                    </div>
+                    foreach (var examinando in Model.Examinandos)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>@examinando.Nome @examinando.Apelido</strong><br />
+                                <span>Telemóvel: @examinando.Telemovel</span><br />
+                                <span>Email: @examinando.Email</span>
+                            </div>
+                            <a asp-action="Edit" asp-controller="Examinando" asp-route-id="@examinando.IdExa" class="btn btn-secondary btn-sm">Editar</a>
+                        </div>
+                    }
                 }
-            }
-            else
-            {
-                <div class="text-muted">Nenhum requisitante associado.</div>
-                <a asp-action="Create" asp-controller="Requisitante" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Requisitante</a>
-            }
-
-            <h5 class="mt-3">Examinandos:</h5>
-            @if (Model.Examinandos != null && Model.Examinandos.Any())
-            {
-                foreach (var examinando in Model.Examinandos)
+                else
                 {
-                    <div>@examinando.Nome @examinando.Apelido</div>
-                    <div>
-                        <a asp-action="Edit" asp-controller="Examinando" asp-route-id="@examinando.IdExa" class="btn btn-secondary btn-sm">Editar</a>
-                    </div>
+                    <div class="text-muted text-center">Nenhum examinando associado.</div>
+                    <a asp-action="Create" asp-controller="Examinando" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Examinando</a>
                 }
-            }
-            else
+            </div>
+
+            <h5 class="mt-3">Receitas</h5>
+            @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
             {
-                <div class="text-muted">Nenhum examinando associado.</div>
-                <a asp-action="Create" asp-controller="Examinando" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Examinando</a>
+                <a asp-action="Create" asp-controller="Receita" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Receita</a>
             }
+
+            <div class="list-group">
+                @if (Model.ListaReceita != null && Model.ListaReceita.Any())
+                {
+                    foreach (var receita in Model.ListaReceita)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>@receita.NumReceita</strong> - @receita.DataReceita.ToShortDateString()
+                            </div>
+                            <a asp-action="Details" asp-controller="Receita" asp-route-id="@receita.IdRec" class="btn btn-primary btn-sm">Detalhes</a>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-muted text-center">Não há receitas associadas.</div>
+                }
+            </div>
+
+            <h5 class="mt-3">Consultas</h5>
+            @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+            {
+                <a asp-action="Create" asp-controller="Consulta" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Consulta</a>
+            }
+
+            <div class="list-group">
+                @if (Model.ListaConsulta != null && Model.ListaConsulta.Any())
+                {
+                    foreach (var consulta in Model.ListaConsulta)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>@consulta.DataConsulta.ToString("dd/MM/yyyy HH:mm")</strong> -
+                                <span class="badge bg-@(consulta.Estado == 0 ? "success" : "warning")">
+                                    @(consulta.Estado == 0 ? "Concluída" : "Ativa")
+                                </span>
+                            </div>
+                            <a asp-action="Details" asp-controller="Consulta" asp-route-id="@consulta.IdCon" class="btn btn-primary btn-sm">Detalhes</a>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-muted text-center">Não há consultas associadas.</div>
+                }
+            </div>
         </div>
-    </div>
-
-    @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
-    {
-        <div class="mt-4">
-            <h5>Associar Médico</h5>
-            @if (ViewData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-danger">
-                    @ViewData["ErrorMessage"]
-                </div>
-            }
-            <form asp-action="AssociateMedico" method="post">
-                <input type="hidden" name="processoId" value="@Model.IdPro" />
-                <div class="form-group">
-                    <label class="control-label">Selecione um Médico</label>
-                    <select name="medicoId" asp-items="medicosSelectList" class="form-control"></select>
-                </div>
-                <button type="submit" class="btn btn-primary">Associar</button>
-            </form>
-        </div>
-    }
-
-    <div class="mt-4">
-        <h5 class="mt-3">Receitas</h5>
-        @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
-        {
-            <a asp-action="Create" asp-controller="Receita" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Receita</a>
-        }
-
-        <h5>Receitas associadas:</h5>
-        @if (Model.ListaReceita != null && Model.ListaReceita.Any())
-        {
-            foreach (var receita in Model.ListaReceita)
-            {
-                <div>
-                    <a asp-action="Details" asp-controller="Receita" asp-route-id="@receita.IdRec" class="btn btn-link">@receita.NumReceita</a>
-                    - @receita.DataReceita.ToShortDateString()
-                </div>
-            }
-        }
-        else
-        {
-            <div class="text-muted">Não há receitas associadas.</div>
-        }
-
-        <h5 class="mt-3">Consultas</h5>
-        @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
-        {
-            <a asp-action="Create" asp-controller="Consulta" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Consulta</a>
-        }
-    </div>
-
-    @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
-    {
-        <div class="mt-4">
-            @if (Model.Estado == 0)
-            {
-                <form asp-action="Reactivate" method="post">
-                    <input type="hidden" name="id" value="@Model.IdPro" />
-                    <button type="submit" class="btn btn-success" onclick="return confirm('Tem certeza que deseja reativar este processo?');">Re-Ativar Processo</button>
-                </form>
-            }
-            else if (Model.Estado == 1)
-            {
-                <form asp-action="Terminate" method="post">
-                    <input type="hidden" name="id" value="@Model.IdPro" />
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja terminar este processo?');">Terminar Processo</button>
-                </form>
-            }
-        </div>
-    }
-
-    <div class="mt-4">
-        <a asp-action="Index" class="btn btn-primary">Voltar à Lista</a>
     </div>
 </div>

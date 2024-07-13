@@ -35,10 +35,10 @@ namespace ClinicaMed.Models
 
         [ForeignKey(nameof(Colaborador))]
         public int ColaboradorFK { get; set; }
-        public Colaborador Colaborador { get; set; }
+        public Colaborador? Colaborador { get; set; }
 
         [ForeignKey(nameof(Processo))]
         public int ProcessoFK { get; set; }
-        public Processo Processo { get; set; }
+        public Processo? Processo { get; set; }
     }
 }
