@@ -41,7 +41,10 @@
                         <form asp-action="RemoveMedico" method="post" class="ml-2">
                             <input type="hidden" name="processoId" value="@Model.IdPro" />
                             <input type="hidden" name="medicoId" value="@medico.IdCol" />
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja desassociar este médico?');">Remover</button>
+                            @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+                            {
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja desassociar este médico?');">Remover</button>
+                            }
                         </form>
                     </div>
                 }
@@ -72,23 +75,25 @@
                 }
             </div>
 
-
-            <div class="mt-4">
-                @if (Model.Estado == 0)
-                {
-                    <form asp-action="Reactivate" method="post">
-                        <input type="hidden" name="id" value="@Model.IdPro" />
-                        <button type="submit" class="btn btn-success" onclick="return confirm('Tem certeza que deseja reativar este processo?');">Re-Ativar Processo</button>
-                    </form>
-                }
-                else if (Model.Estado == 1)
-                {
-                    <form asp-action="Terminate" method="post">
-                        <input type="hidden" name="id" value="@Model.IdPro" />
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja terminar este processo?');">Terminar Processo</button>
-                    </form>
-                }
-            </div>
+            @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+            {
+                <div class="mt-4">
+                    @if (Model.Estado == 0)
+                    {
+                        <form asp-action="Reactivate" method="post">
+                            <input type="hidden" name="id" value="@Model.IdPro" />
+                            <button type="submit" class="btn btn-success" onclick="return confirm('Tem certeza que deseja reativar este processo?');">Re-Ativar Processo</button>
+                        </form>
+                    }
+                    else if (Model.Estado == 1)
+                    {
+                        <form asp-action="Terminate" method="post">
+                            <input type="hidden" name="id" value="@Model.IdPro" />
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja terminar este processo?');">Terminar Processo</button>
+                        </form>
+                    }
+                </div>
+            }
 
             <div class="mt-4">
                 <a asp-action="Index" class="btn btn-primary">Voltar à Lista</a>
@@ -108,14 +113,25 @@
                                 <span>Telemóvel: @requisitante.Telemovel</span><br />
                                 <span>Email: @requisitante.Email</span>
                             </div>
-                            <a asp-action="Edit" asp-controller="Requisitante" asp-route-id="@requisitante.IdReq" class="btn btn-secondary btn-sm">Editar</a>
+                            @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+                            {
+                                <a asp-action="Edit" asp-controller="Requisitante" asp-route-id="@requisitante.IdReq" class="btn btn-secondary btn-sm">Editar</a>
+                            }
+                            else
+                            {
+                                <a asp-action="Edit" asp-controller="Requisitante" asp-route-id="@requisitante.IdReq" class="btn btn-success btn-sm">Visualizar</a>
+                            }
                         </div>
                     }
                 }
                 else
                 {
                     <div class="text-muted text-center">Nenhum requisitante associado.</div>
-                    <a asp-action="Create" asp-controller="Requisitante" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Requisitante</a>
+                    @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+                    {
+                        <a asp-action="Create" asp-controller="Requisitante" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Requisitante</a>
+
+                    }
                 }
             </div>
 
@@ -138,7 +154,11 @@
                 else
                 {
                     <div class="text-muted text-center">Nenhum examinando associado.</div>
-                    <a asp-action="Create" asp-controller="Examinando" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Examinando</a>
+                    @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+                    {
+                        <a asp-action="Create" asp-controller="Examinando" asp-route-processoId="@Model.IdPro" class="btn btn-success">Criar Examinando</a>
+
+                    }
                 }
             </div>
 

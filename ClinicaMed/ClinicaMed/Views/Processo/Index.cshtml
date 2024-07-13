@@ -7,7 +7,11 @@
 <h1>@ViewData["Title"]</h1>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <a asp-action="Create" class="btn btn-primary">Criar Processo</a>
+    @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+    {
+        <a asp-action="Create" class="btn btn-primary">Criar Processo</a>
+    }
+    
     <input type="text" id="searchBox" class="form-control w-25" placeholder="Procure pelo ID Interno..." onkeyup="filterTable()">
 </div>
 

@@ -18,67 +18,79 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="Nome" class="control-label"></label>
-                            <input asp-for="Nome" class="form-control" />
+                            <input asp-for="Nome" class="form-control" placeholder="Nome" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="Nome" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Apelido" class="control-label"></label>
-                            <input asp-for="Apelido" class="form-control" />
+                            <input asp-for="Apelido" class="form-control" placeholder="Apelido" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="Apelido" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Telemovel" class="control-label"></label>
-                            <input asp-for="Telemovel" class="form-control" />
+                            <input asp-for="Telemovel" class="form-control" placeholder="Telemóvel" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="Telemovel" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Email" class="control-label"></label>
-                            <input asp-for="Email" class="form-control" />
+                            <input asp-for="Email" class="form-control" placeholder="Email" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
-                        <div class="form-group">
-                            <label asp-for="Sexo" class="control-label"></label>
-                            <select asp-for="Sexo" class="form-select">
-                                <option value="0">Masculino</option>
-                                <option value="1">Feminino</option>
-                            </select>
-                            <span asp-validation-for="Sexo" class="text-danger"></span>
-                        </div>
+                        @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+                        {
+                            <div class="form-group">
+                                <label asp-for="Sexo" class="control-label"></label>
+                                <select asp-for="Sexo" class="form-select">
+                                    <option value="0">Masculino</option>
+                                    <option value="1">Feminino</option>
+                                </select>
+                                <span asp-validation-for="Sexo" class="text-danger"></span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                <label asp-for="Sexo" class="control-label"></label>
+                                <input type="text" class="form-control" value="@(Model.Sexo == 0 ? "Masculino" : "Feminino")" readonly />
+                                <span asp-validation-for="Sexo" class="text-danger"></span>
+                            </div>
+                        }
+
                         <div class="form-group">
                             <label asp-for="DataNascimento" class="control-label"></label>
-                            <input asp-for="DataNascimento" class="form-control" />
+                            <input asp-for="DataNascimento" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="DataNascimento" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="Profissao" class="control-label"></label>
-                            <input asp-for="Profissao" class="form-control" />
+                            <input asp-for="Profissao" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="Profissao" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Pais" class="control-label"></label>
-                            <input asp-for="Pais" class="form-control" />
+                            <input asp-for="Pais" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="Pais" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Morada" class="control-label"></label>
-                            <input asp-for="Morada" class="form-control" />
+                            <input asp-for="Morada" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="Morada" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="CodigoPostal" class="control-label"></label>
-                            <input asp-for="CodigoPostal" class="form-control" />
+                            <input asp-for="CodigoPostal" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="CodigoPostal" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Localidade" class="control-label"></label>
-                            <input asp-for="Localidade" class="form-control" />
+                            <input asp-for="Localidade" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="Localidade" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Nacionalidade" class="control-label"></label>
-                            <input asp-for="Nacionalidade" class="form-control" />
+                            <input asp-for="Nacionalidade" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="Nacionalidade" class="text-danger"></span>
                         </div>
                     </div>
@@ -88,44 +100,44 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="NumUtente" class="control-label"></label>
-                            <input asp-for="NumUtente" class="form-control" />
+                            <input asp-for="NumUtente" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="NumUtente" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="CartaoCidadao" class="control-label"></label>
-                            <input asp-for="CartaoCidadao" class="form-control" />
+                            <input asp-for="CartaoCidadao" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="CartaoCidadao" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="ValidadeCC" class="control-label"></label>
-                            <input asp-for="ValidadeCC" class="form-control" />
+                            <input asp-for="ValidadeCC" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="ValidadeCC" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Nif" class="control-label">NIF</label>
-                            <input asp-for="Nif" class="form-control" />
+                            <input asp-for="Nif" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="Nif" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="Seguradora" class="control-label"></label>
-                            <input asp-for="Seguradora" class="form-control" />
+                            <input asp-for="Seguradora" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="Seguradora" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="NumeroSeguro" class="control-label"></label>
-                            <input asp-for="NumeroSeguro" class="form-control" />
+                            <input asp-for="NumeroSeguro" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="NumeroSeguro" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="FiliacaoMae" class="control-label"></label>
-                            <input asp-for="FiliacaoMae" class="form-control" />
+                            <input asp-for="FiliacaoMae" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="FiliacaoMae" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="FiliacaoPai" class="control-label"></label>
-                            <input asp-for="FiliacaoPai" class="form-control" />
+                            <input asp-for="FiliacaoPai" class="form-control" readonly="@(User.IsInRole("Administrador") || User.IsInRole("Administrativo") ? false : true)" />
                             <span asp-validation-for="FiliacaoPai" class="text-danger"></span>
                         </div>
                     </div>

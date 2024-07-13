@@ -46,22 +46,28 @@
         <a asp-action="Edit" asp-route-id="@Model?.IdCon" class="btn btn-primary">Editar</a>
         <a asp-controller="Processo" asp-action="Details" asp-route-id="@Model.ProcessoFK" class="btn btn-secondary">Voltar</a>
 
-        <form asp-action="Delete" asp-route-id="@Model.IdCon" method="post" style="display:inline;">
-            <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja apagar esta consulta?');">Apagar</button>
-        </form>
-
-        <!-- Botão para terminar a consulta -->
-        @if (Model.Estado == 1)
+        @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
         {
-            <form asp-action="TerminarConsulta" asp-route-id="@Model.IdCon" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-warning" onclick="return confirm('Tem certeza que deseja concluir esta consulta?');">Concluir Consulta</button>
+            <form asp-action="Delete" asp-route-id="@Model.IdCon" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja apagar esta consulta?');">Apagar</button>
             </form>
         }
-        else
+
+        <!-- Botão para terminar a consulta -->
+        @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
         {
-            <form asp-action="AtivarConsulta" asp-route-id="@Model.IdCon" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-success" onclick="return confirm('Tem certeza que deseja ativar esta consulta?');">Ativar Consulta</button>
-            </form>
+            @if (Model.Estado == 1)
+            {
+                <form asp-action="TerminarConsulta" asp-route-id="@Model.IdCon" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-warning" onclick="return confirm('Tem certeza que deseja concluir esta consulta?');">Concluir Consulta</button>
+                </form>
+            }
+            else
+            {
+                <form asp-action="AtivarConsulta" asp-route-id="@Model.IdCon" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-success" onclick="return confirm('Tem certeza que deseja ativar esta consulta?');">Ativar Consulta</button>
+                </form>
+            }
         }
     </div>
 </div>

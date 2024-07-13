@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace ClinicaMed.Controllers
 {
@@ -23,9 +24,37 @@ namespace ClinicaMed.Controllers
         // Listar todos os processos
         public IActionResult Index()
         {
-            var processos = _context.Processo.Include(p => p.Examinandos).ToList();
-            return View(processos);
+            IQueryable<Processo> processos;
+
+            if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+            {
+                // Administradores podem ver todos os processos
+                processos = _context.Processo.Include(p => p.Examinandos);
+            }
+            else if (User.IsInRole("Medico"))
+            {
+                // Médicos só veem os processos associados a eles
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Obter ID do colaborador
+
+                processos = from p in _context.Processo
+                            join pc in _context.ProcessoColaborador on p.IdPro equals pc.ProcessoFK
+                            join c in _context.Colaborador on pc.ColaboradorFK equals c.IdCol
+                            where c.UserId == userId
+                            select p;
+            }
+            else
+            {
+                // Para outros papéis, você pode retornar uma lista vazia ou uma mensagem de acesso negado
+                processos = Enumerable.Empty<Processo>().AsQueryable();
+            }
+
+            // Ordenar a lista de processos pelo IdInterno
+            var orderedProcessos = processos.OrderBy(p => p.IdInterno).ToList();
+
+            return View(orderedProcessos);
         }
+
+
 
         // Visualizar detalhes de um processo específico
         public async Task<IActionResult> Details(int? id)

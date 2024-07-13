@@ -41,13 +41,20 @@
             </dl>
         </div>
     </div>
+    
+        <div class="text-center mt-4">
+            @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+            {
+                <a asp-action="Edit" asp-route-id="@Model?.IdRec" class="btn btn-primary">Editar</a>
+            }
+            
+            <a asp-controller="Processo" asp-action="Details" asp-route-id="@Model.ProcessoFK" class="btn btn-secondary">Voltar</a>
 
-    <div class="text-center mt-4">
-        <a asp-action="Edit" asp-route-id="@Model?.IdRec" class="btn btn-primary">Editar</a>
-        <a asp-controller="Processo" asp-action="Details" asp-route-id="@Model.ProcessoFK" class="btn btn-secondary">Voltar</a>
-
-        <form asp-action="Delete" asp-route-id="@Model.IdRec" method="post" style="display:inline;">
-            <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja apagar esta receita?');">Apagar</button>
-        </form>
-    </div>
+            @if (User.IsInRole("Administrador") || User.IsInRole("Administrativo"))
+            {
+                <form asp-action="Delete" asp-route-id="@Model.IdRec" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja apagar esta receita?');">Apagar</button>
+                </form>
+            } 
+        </div>
 </div>
