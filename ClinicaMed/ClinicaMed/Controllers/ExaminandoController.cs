@@ -10,13 +10,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicaMed.Controllers
 {
-    // O atributo [Authorize] assegura que apenas utilizadores autenticados podem aceder a este controlador
     [Authorize]
     public class ExaminandoController : Controller
     {
-        private readonly ApplicationDbContext _context; // Contexto da base de dados
+        private readonly ApplicationDbContext _context;
 
-        // Construtor do controlador, recebe o contexto da base de dados
         public ExaminandoController(ApplicationDbContext context)
         {
             _context = context;
@@ -34,7 +32,7 @@ namespace ClinicaMed.Controllers
         {
             if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             // Procurar o examinando pelo ID
@@ -42,7 +40,7 @@ namespace ClinicaMed.Controllers
                 .FirstOrDefaultAsync(m => m.IdExa == id);
             if (examinando == null) // Verifica se o examinando existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             return View(examinando); // Retorna a view com os detalhes do examinando
@@ -57,7 +55,7 @@ namespace ClinicaMed.Controllers
 
         // POST: Examinando/Create
         [HttpPost]
-        [ValidateAntiForgeryToken] // Protege contra ataques CSRF
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdExa,Nome,Apelido,Telemovel,Email,Sexo,Antecedentes,DataNascimento,Profissao,Pais,Morada,CodigoPostal,Localidade,Nacionalidade,NumUtente,CartaoCidadao,ValidadeCC,Nif,Seguradora,NumeroSeguro,FiliacaoMae,FiliacaoPai")] Examinando examinando, int? processoId)
         {
             if (ModelState.IsValid) // Verifica se o estado do modelo é válido
@@ -78,13 +76,13 @@ namespace ClinicaMed.Controllers
         {
             if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             var examinando = await _context.Examinando.FindAsync(id); // Procura o examinando pelo ID
             if (examinando == null) // Verifica se o examinando existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
             return View(examinando); // Retorna a view de edição com o examinando
         }
@@ -96,7 +94,7 @@ namespace ClinicaMed.Controllers
         {
             if (id != examinando.IdExa) // Verifica se o ID da consulta corresponde ao ID fornecido
             {
-                return NotFound(); // Retorna erro 404 se não corresponder
+                return NotFound(); // Retorna erro se não corresponder
             }
 
             if (ModelState.IsValid) // Verifica se o estado do modelo é válido
@@ -112,7 +110,7 @@ namespace ClinicaMed.Controllers
                 {
                     if (!ExaminandoExists(examinando.IdExa)) // Verifica se o examinando ainda existe
                     {
-                        return NotFound(); // Retorna erro 404 se não existir
+                        return NotFound(); // Retorna erro se não existir
                     }
                     else
                     {
@@ -129,14 +127,14 @@ namespace ClinicaMed.Controllers
         {
             if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             var examinando = await _context.Examinando
                 .FirstOrDefaultAsync(m => m.IdExa == id); // Procura o examinando pelo ID
             if (examinando == null) // Verifica se o examinando existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             return View(examinando); // Retorna a view de confirmação de eliminação com o examinando

@@ -11,14 +11,14 @@ using System.Security.Claims;
 
 namespace ClinicaMed.Controllers
 {
-    [Authorize] // Garante que apenas utilizadores autenticados podem aceder a este controlador
+    [Authorize]
     public class ProcessoController : Controller
     {
-        private readonly ApplicationDbContext _context; // Contexto da base de dados
+        private readonly ApplicationDbContext _context;
 
         public ProcessoController(ApplicationDbContext context)
         {
-            _context = context; // Inicializa o contexto
+            _context = context;
         }
 
         // Listar todos os processos
@@ -44,7 +44,7 @@ namespace ClinicaMed.Controllers
             }
             else
             {
-                // Para outros papéis, você pode retornar uma lista vazia ou uma mensagem de acesso negado
+                // Para outros roles, retornar uma lista vazia ou uma mensagem de acesso negado
                 processos = Enumerable.Empty<Processo>().AsQueryable();
             }
 
@@ -59,7 +59,7 @@ namespace ClinicaMed.Controllers
         {
             if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             var processo = await _context.Processo
@@ -73,7 +73,7 @@ namespace ClinicaMed.Controllers
 
             if (processo == null) // Verifica se o processo existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             var medicos = await _context.Colaborador
@@ -100,13 +100,13 @@ namespace ClinicaMed.Controllers
             };
 
             _context.Processo.Add(newProcesso); // Adiciona o novo processo ao contexto
-            _context.SaveChanges(); // Salva as alterações
+            _context.SaveChanges(); // Guarda as alterações
 
             var currentYear = DateTime.Now.ToString("yy");
             newProcesso.IdInterno = $"CM{currentYear}-{newProcesso.IdPro}"; // Gera um ID interno
 
             _context.Processo.Update(newProcesso); // Atualiza o processo com o ID interno
-            _context.SaveChanges(); // Salva as alterações
+            _context.SaveChanges(); // Guarda as alterações
 
             return RedirectToAction(nameof(Details), new { id = newProcesso.IdPro }); // Redireciona para os detalhes do novo processo
         }
@@ -151,7 +151,7 @@ namespace ClinicaMed.Controllers
             };
 
             _context.ProcessoColaborador.Add(processoColaborador); // Adiciona a associação ao contexto
-            await _context.SaveChangesAsync(); // Salva as alterações
+            await _context.SaveChangesAsync(); // Guarda as alterações
 
             return RedirectToAction(nameof(Details), new { id = processoId }); // Redireciona para os detalhes do processo
         }
@@ -179,14 +179,14 @@ namespace ClinicaMed.Controllers
             var processo = await _context.Processo.FindAsync(id);
             if (processo == null)
             {
-                return NotFound(); // Retorna erro 404 se não existir
+                return NotFound(); // Retorna erro se não existir
             }
 
             processo.Estado = 0; // Define o estado como terminado
             processo.DataTermino = DateOnly.FromDateTime(DateTime.Now); // Define a data de término
 
             _context.Processo.Update(processo); // Atualiza o processo no contexto
-            await _context.SaveChangesAsync(); // Salva as alterações
+            await _context.SaveChangesAsync(); // Guarda as alterações
 
             return RedirectToAction(nameof(Details), new { id = processo.IdPro }); // Redireciona para os detalhes do processo
         }
@@ -198,14 +198,14 @@ namespace ClinicaMed.Controllers
             var processo = await _context.Processo.FindAsync(id);
             if (processo == null)
             {
-                return NotFound(); // Retorna erro 404 se não existir
+                return NotFound(); // Retorna erro se não existir
             }
 
             processo.Estado = 1; // Define o estado como ativo
             processo.DataTermino = null; // Limpa a data de término
 
             _context.Processo.Update(processo); // Atualiza o processo no contexto
-            await _context.SaveChangesAsync(); // Salva as alterações
+            await _context.SaveChangesAsync(); // Guarda as alterações
 
             return RedirectToAction(nameof(Details), new { id = processo.IdPro }); // Redireciona para os detalhes do processo
         }

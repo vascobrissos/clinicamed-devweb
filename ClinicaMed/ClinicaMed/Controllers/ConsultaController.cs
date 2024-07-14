@@ -9,13 +9,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicaMed.Controllers
 {
-    // O atributo [Authorize] assegura que apenas utilizadores autenticados podem aceder a este controlador
     [Authorize]
     public class ConsultaController : Controller
     {
-        private readonly ApplicationDbContext _context; // Contexto da base de dados
+        private readonly ApplicationDbContext _context;
 
-        // Construtor do controlador, recebe o contexto da base de dados
         public ConsultaController(ApplicationDbContext context)
         {
             _context = context;
@@ -34,7 +32,7 @@ namespace ClinicaMed.Controllers
         {
             if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             // Procurar a consulta pelo ID
@@ -44,7 +42,7 @@ namespace ClinicaMed.Controllers
                 .FirstOrDefaultAsync(m => m.IdCon == id);
             if (consulta == null) // Verifica se a consulta existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             return View(consulta); // Retornar a view com os detalhes da consulta
@@ -76,21 +74,21 @@ namespace ClinicaMed.Controllers
 
         // POST: Consulta/Create
         [HttpPost]
-        [ValidateAntiForgeryToken] // Protege contra ataques CSRF
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DataConsulta,Observacoes,Estado")] Consulta consulta, int processoId, int colaboradorId)
         {
             // Carregar o processo associado ao processoId
             var processo = await _context.Processo.FindAsync(processoId);
             if (processo == null) // Verifica se o processo existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             // Carregar o colaborador associado ao colaboradorId
             var colaborador = await _context.Colaborador.FindAsync(colaboradorId);
             if (colaborador == null) // Verifica se o colaborador existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             // Associar processo e colaborador à consulta
@@ -101,7 +99,7 @@ namespace ClinicaMed.Controllers
             if (ModelState.IsValid) // Verifica se o modelo é válido
             {
                 _context.Add(consulta); // Adiciona a consulta ao contexto
-                await _context.SaveChangesAsync(); // Salva as alterações na base de dados
+                await _context.SaveChangesAsync(); // Guarda as alterações na base de dados
                 return RedirectToAction("Details", "Processo", new { id = consulta.ProcessoFK }); // Redireciona para os detalhes do processo
             }
 
@@ -120,13 +118,13 @@ namespace ClinicaMed.Controllers
         {
             if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             var consulta = await _context.Consulta.FindAsync(id); // Procura a consulta pelo ID
             if (consulta == null) // Verifica se a consulta existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             // Carrega os colaboradores e processos para o dropdown na view
@@ -142,7 +140,7 @@ namespace ClinicaMed.Controllers
         {
             if (id != consulta.IdCon) // Verifica se o ID da consulta corresponde ao ID fornecido
             {
-                return NotFound(); // Retorna erro 404 se não corresponder
+                return NotFound(); // Retorna erro se não corresponder
             }
 
             if (ModelState.IsValid) // Verifica se o estado do modelo é válido
@@ -173,11 +171,11 @@ namespace ClinicaMed.Controllers
             var consulta = await _context.Consulta.FindAsync(id); // Encontrar a consulta pelo ID
             if (consulta == null) // Verifica se a consulta existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             _context.Consulta.Remove(consulta); // Remove a consulta do contexto
-            await _context.SaveChangesAsync(); // Salva alterações na base de dados
+            await _context.SaveChangesAsync(); // Guarda alterações na base de dados
 
             return RedirectToAction("Details", "Processo", new { id = consulta.ProcessoFK }); // Redirecionar para os detalhes do processo
         }
@@ -189,12 +187,12 @@ namespace ClinicaMed.Controllers
             var consulta = await _context.Consulta.FindAsync(id); // Encontrar a consulta pelo ID
             if (consulta == null) // Verifica se a consulta existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             consulta.Estado = 0; // Definir estado como terminada
             _context.Update(consulta); // Atualiza a consulta no contexto
-            await _context.SaveChangesAsync(); // Salvar alterações
+            await _context.SaveChangesAsync(); // Guardar alterações
 
             return RedirectToAction(nameof(Details), new { id = consulta.IdCon }); // Redirecionar para os detalhes da consulta
         }
@@ -206,12 +204,12 @@ namespace ClinicaMed.Controllers
             var consulta = await _context.Consulta.FindAsync(id); // Encontrar a consulta pelo ID
             if (consulta == null) // Verifica se a consulta existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             consulta.Estado = 1; // Definir estado como ativo
             _context.Update(consulta); // Atualiza a consulta no contexto
-            await _context.SaveChangesAsync(); // Salvar alterações
+            await _context.SaveChangesAsync(); // Guardar alterações
 
             return RedirectToAction(nameof(Details), new { id = consulta.IdCon }); // Redirecionar para os detalhes da consulta
         }

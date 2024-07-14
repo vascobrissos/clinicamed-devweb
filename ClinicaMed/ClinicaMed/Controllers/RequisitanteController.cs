@@ -9,14 +9,14 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicaMed.Controllers
 {
-    [Authorize] // Garante que apenas utilizadores autenticados acedem a este controlador
+    [Authorize]
     public class RequisitanteController : Controller
     {
-        private readonly ApplicationDbContext _context; // Contexto da base de dados
+        private readonly ApplicationDbContext _context;
 
         public RequisitanteController(ApplicationDbContext context)
         {
-            _context = context; // Inicializa o contexto
+            _context = context;
         }
 
         // GET: Requisitante
@@ -31,15 +31,15 @@ namespace ClinicaMed.Controllers
         {
             if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
-            // Busca o requisitante pelo ID
+            // Procura o requisitante pelo ID
             var requisitante = await _context.Requisitante
                 .FirstOrDefaultAsync(m => m.IdReq == id);
             if (requisitante == null) // Verifica se o requisitante existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             return View(requisitante); // Retorna a view com os detalhes do requisitante
@@ -62,7 +62,7 @@ namespace ClinicaMed.Controllers
                 requisitante.ProcessoId = processoId.HasValue ? processoId.Value : default; // Associa o ID do processo
 
                 _context.Add(requisitante); // Adiciona o requisitante ao contexto
-                await _context.SaveChangesAsync(); // Salva as alterações
+                await _context.SaveChangesAsync(); // Guarda as alterações
 
                 // Redireciona para os detalhes do processo
                 return RedirectToAction("Details", "Processo", new { id = processoId });
@@ -75,13 +75,13 @@ namespace ClinicaMed.Controllers
         {
             if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             var requisitante = await _context.Requisitante.FindAsync(id); // Busca o requisitante pelo ID
             if (requisitante == null) // Verifica se o requisitante existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
             return View(requisitante); // Retorna a view de edição do requisitante
         }
@@ -93,7 +93,7 @@ namespace ClinicaMed.Controllers
         {
             if (id != requisitante.IdReq) // Verifica se o ID da receita corresponde
             {
-                return NotFound(); // Retorna erro 404 se não corresponder
+                return NotFound(); // Retorna erro se não corresponder
             }
 
             if (ModelState.IsValid) // Verifica se o modelo é válido
@@ -109,7 +109,7 @@ namespace ClinicaMed.Controllers
                 {
                     if (!RequisitanteExists(requisitante.IdReq)) // Verifica se o requisitante ainda existe
                     {
-                        return NotFound(); // Retorna erro 404 se não existir
+                        return NotFound(); // Retorna erro se não existir
                     }
                     else
                     {
@@ -126,14 +126,14 @@ namespace ClinicaMed.Controllers
         {
             if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             var requisitante = await _context.Requisitante
                 .FirstOrDefaultAsync(m => m.IdReq == id); // Busca o requisitante pelo ID
             if (requisitante == null) // Verifica se o requisitante existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             return View(requisitante); // Retorna a view de confirmação da eliminação do requisitante
@@ -150,7 +150,7 @@ namespace ClinicaMed.Controllers
                 _context.Requisitante.Remove(requisitante); // Remove o requisitante do contexto
             }
 
-            await _context.SaveChangesAsync(); // Salva as alterações
+            await _context.SaveChangesAsync(); // Guarda as alterações
             return RedirectToAction(nameof(Index)); // Redireciona para a lista de requisitantes
         }
 

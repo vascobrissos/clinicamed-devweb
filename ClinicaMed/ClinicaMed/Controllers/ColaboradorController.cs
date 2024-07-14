@@ -15,14 +15,12 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicaMed.Controllers
 {
-    // O atributo [Authorize] assegura que apenas utilizadores autenticados podem aceder a este controlador
-    [Authorize]
+    [Authorize(Roles = "Administrador, Administrativo")]
     public class ColaboradorController : Controller
     {
-        private readonly ApplicationDbContext _context; // Contexto da base de dados
-        private readonly UserManager<IdentityUser> _userManager; // Gestor de utilizadores para operações de identidade
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        // Construtor do controlador, recebe o contexto e o gestor de utilizadores
         public ColaboradorController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
@@ -43,7 +41,7 @@ namespace ClinicaMed.Controllers
                 // Encontrar o utilizador associado ao colaborador
                 var user = await _userManager.FindByIdAsync(colaborador.UserId);
                 var roles = await _userManager.GetRolesAsync(user); // Obter roles do utilizador
-                var role = roles.FirstOrDefault(); // Pegar a primeira role, se existir
+                var role = roles.FirstOrDefault(); // Pegar na primeira role, se existir
                 var username = await _userManager.GetUserNameAsync(user); // Obter o nome de utilizador
                 var email = await _userManager.GetEmailAsync(user); // Obter o email
                 var accountStatus = (user.LockoutEnd == null || user.LockoutEnd <= DateTime.Now) ? "Ativa" : "Inativa"; // Verificar o estado da conta
@@ -75,7 +73,7 @@ namespace ClinicaMed.Controllers
         }
 
         // POST: Colaboradores/Create
-        [HttpPost] // Este método responde a um pedido POST
+        [HttpPost]
         [ValidateAntiForgeryToken] // Protege contra ataques CSRF
         public async Task<IActionResult> Create(string EmailCol, string Role, [Bind("UserId,NomeApresentacao,Nome,Apelido,Telemovel,Sexo,DataNascimento,Pais,Morada,CodPostal,Localidade,Nacionalidade,Nif,EstadoCivil,NumOrdem")] Colaborador colaborador)
         {
@@ -95,7 +93,7 @@ namespace ClinicaMed.Controllers
 
                     await _userManager.AddToRoleAsync(user, Role); // Adicionar a role ao utilizador
 
-                    await _context.SaveChangesAsync(); // Salvar as alterações na base de dados
+                    await _context.SaveChangesAsync(); // Guardar as alterações na base de dados
 
                     return RedirectToAction(nameof(Index)); // Redirecionar para a lista de colaboradores
                 }
@@ -118,20 +116,20 @@ namespace ClinicaMed.Controllers
         {
             if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound(); // Retorna erro 404 se o ID não for fornecido
+                return NotFound(); // Retorna erro se o ID não for fornecido
             }
 
             var colaborador = await _context.Colaborador.FindAsync(id); // Procura o colaborador pelo ID
             if (colaborador == null) // Verifica se o colaborador existe
             {
-                return NotFound(); // Retorna erro 404 se não existir
+                return NotFound(); // Retorna erro se não existir
             }
 
             // Obter o utilizador da ASP.NET Core Identity associado ao colaborador
             var user = await _userManager.FindByIdAsync(colaborador.UserId);
             if (user == null)
             {
-                return NotFound(); // Retorna erro 404 se o utilizador não existir
+                return NotFound(); // Retorna erro se o utilizador não existir
             }
 
             // Adicionar dados adicionais ao ViewData para serem utilizados na view
@@ -148,7 +146,7 @@ namespace ClinicaMed.Controllers
         {
             if (id != colaborador.IdCol) // Verifica se o ID do colaborador corresponde ao ID da URL
             {
-                return NotFound(); // Retorna erro 404 se não corresponder
+                return NotFound(); // Retorna erro se não corresponder
             }
 
             if (ModelState.IsValid) // Verifica se o estado do modelo é válido
@@ -196,7 +194,7 @@ namespace ClinicaMed.Controllers
                 {
                     if (!ColaboradorExists(colaborador.IdCol)) // Verifica se o colaborador existe
                     {
-                        return NotFound(); // Retorna erro 404 se não existir
+                        return NotFound(); // Retorna erro se não existir
                     }
                     else
                     {
@@ -220,14 +218,14 @@ namespace ClinicaMed.Controllers
                 .FirstOrDefaultAsync(m => m.IdCol == id);
             if (colaborador == null)
             {
-                return NotFound(); // Retorna erro 404 se não existir
+                return NotFound(); // Retorna erro se não existir
             }
 
             // Obter o utilizador associado ao colaborador
             var user = await _userManager.FindByIdAsync(colaborador.UserId);
             if (user == null)
             {
-                return NotFound(); // Retorna erro 404 se não existir
+                return NotFound(); // Retorna erro se não existir
             }
 
             // Verifica o estado de LockoutEnd e atualiza a data
@@ -239,10 +237,10 @@ namespace ClinicaMed.Controllers
             else
             {
                 // Ativar a conta (definir LockoutEnd para uma data futura)
-                await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddYears(100)); // ou outro valor que desejar
+                await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddYears(100)); // ou outro valor
             }
 
-            await _context.SaveChangesAsync(); // Salvar alterações
+            await _context.SaveChangesAsync(); // Guardar alterações
             return RedirectToAction(nameof(Index)); // Redirecionar para a lista de colaboradores
         }
 
@@ -273,12 +271,12 @@ namespace ClinicaMed.Controllers
                 }
                 else
                 {
-                    return NotFound(); // Retorna erro 404 se o utilizador não existir
+                    return NotFound(); // Retorna erro se o utilizador não existir
                 }
             }
             else
             {
-                return NotFound(); // Retorna erro 404 se o colaborador não existir
+                return NotFound(); // Retorna erro se o colaborador não existir
             }
             return RedirectToAction(nameof(Index)); // Redirecionar para a lista de colaboradores
         }

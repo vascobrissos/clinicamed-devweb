@@ -9,14 +9,14 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicaMed.Controllers
 {
-    [Authorize] // Garante que apenas utilizadores autenticados podem aceder a este controlador
+    [Authorize]
     public class ReceitaController : Controller
     {
-        private readonly ApplicationDbContext _context; // Contexto da base de dados
+        private readonly ApplicationDbContext _context;
 
         public ReceitaController(ApplicationDbContext context)
         {
-            _context = context; // Inicializa o contexto
+            _context = context;
         }
 
         // GET: Receita
@@ -32,17 +32,17 @@ namespace ClinicaMed.Controllers
         {
             if (id == null) // Verifica se o ID é nulo
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
-            // Busca a receita pelo ID, incluindo colaborador e processo
+            // Procura a receita pelo ID, incluindo colaborador e processo
             var receita = await _context.Receita
                 .Include(r => r.Colaborador)
                 .Include(r => r.Processo)
                 .FirstOrDefaultAsync(m => m.IdRec == id);
             if (receita == null) // Verifica se a receita existe
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             return View(receita); // Retorna a view com os detalhes da receita
@@ -51,7 +51,7 @@ namespace ClinicaMed.Controllers
         // GET: Receita/Create
         public IActionResult Create(int processoId)
         {
-            // Busca médicos associados ao processo
+            // Procura médicos associados ao processo
             var medicos = _context.ProcessoColaborador
                 .Where(pc => pc.ProcessoFK == processoId)
                 .Select(pc => pc.Colaborador)
@@ -81,14 +81,14 @@ namespace ClinicaMed.Controllers
             var processo = await _context.Processo.FindAsync(processoId);
             if (processo == null)
             {
-                return NotFound(); // Retorna erro 404 se o processo não existir
+                return NotFound(); // Retorna erro se o processo não existir
             }
 
             // Carregar o colaborador associado ao colaboradorId
             var colaborador = await _context.Colaborador.FindAsync(colaboradorId);
             if (colaborador == null)
             {
-                return NotFound(); // Retorna erro 404 se o colaborador não existir
+                return NotFound(); // Retorna erro se o colaborador não existir
             }
 
             // Associar o processo e o colaborador à nova receita
@@ -121,13 +121,13 @@ namespace ClinicaMed.Controllers
         {
             if (id == null)
             {
-                return NotFound(); // Retorna erro 404
+                return NotFound(); // Retorna erro
             }
 
             var receita = await _context.Receita.FindAsync(id);
             if (receita == null)
             {
-                return NotFound(); // Retorna erro 404 se a receita não existir
+                return NotFound(); // Retorna erro se a receita não existir
             }
             // Prepara listas de seleção para a edição
             ViewData["ColaboradorFK"] = new SelectList(_context.Colaborador, "IdCol", "Apelido", receita.ColaboradorFK);
@@ -142,7 +142,7 @@ namespace ClinicaMed.Controllers
         {
             if (id != receita.IdRec) // Verifica se o ID da receita corresponde
             {
-                return NotFound(); // Retorna erro 404 se não corresponder
+                return NotFound(); // Retorna erro se não corresponder
             }
 
             if (ModelState.IsValid) // Verifica se o modelo é válido
@@ -150,11 +150,11 @@ namespace ClinicaMed.Controllers
                 try
                 {
                     _context.Update(receita); // Atualiza a receita no contexto
-                    await _context.SaveChangesAsync(); // Salva as alterações
+                    await _context.SaveChangesAsync(); // Guarda as alterações
                 }
                 catch (DbUpdateConcurrencyException) // Captura exceção de concorrência
                 {
-                    return NotFound(); // Retorna erro 404 se a receita não existir
+                    return NotFound(); // Retorna erro se a receita não existir
                 }
                 return RedirectToAction(nameof(Details), new { id = receita.IdRec }); // Redireciona para os detalhes da receita
             }
@@ -172,11 +172,11 @@ namespace ClinicaMed.Controllers
             var receita = await _context.Receita.FindAsync(id);
             if (receita == null)
             {
-                return NotFound(); // Retorna erro 404 se a receita não existir
+                return NotFound(); // Retorna erro se a receita não existir
             }
 
             _context.Receita.Remove(receita); // Remove a receita do contexto
-            await _context.SaveChangesAsync(); // Salva as alterações
+            await _context.SaveChangesAsync(); // Guarda as alterações
 
             return RedirectToAction("Details", "Processo", new { id = receita.ProcessoFK }); // Redireciona para os detalhes do processo após a exclusão
         }
